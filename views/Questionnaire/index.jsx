@@ -132,7 +132,8 @@ export const Questionnaire = () => {
       Voice.onSpeechEnd = onSpeechEnd;
 
       Voice.onSpeechResults = onSpeechPartialResults;
-      // else Voice.onSpeechPartialResults = onSpeechPartialResults;
+      if (Platform.OS === 'android')
+        Voice.onSpeechPartialResults = onSpeechPartialResults;
       Voice.onSpeechError = onSpeechError;
 
       try {
@@ -456,12 +457,13 @@ export const Questionnaire = () => {
             {questions[qStatus.questionIdx].question}
           </Text>
         </View>
-        <View accessible={false}>
+        <View accessible={Platform.OS === 'android' ? true : false}>
           {questions[qStatus.questionIdx].answers.map((ans, answerIndex) => {
             return (
               <Button
                 title={`${answerIndex + 1}.   ${ans}`}
                 accessible={Platform.OS === 'android' ? true : false}
+                accessibilityLabelledBy={answerIndex + 1}
                 titleStyle={{
                   color: 'white',
                   fontSize: 25,
