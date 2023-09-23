@@ -3,8 +3,7 @@ import Voice from '@react-native-voice/voice';
 import TTS from 'react-native-tts';
 import Geolocation from '@react-native-community/geolocation';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import {Alert} from 'react-native';
-
+import {Alert, Platform} from 'react-native';
 import {View, StyleSheet, ScrollView} from 'react-native';
 import {Button, Divider, Text, LinearProgress} from '@rneui/themed';
 import QuestionService from '../../services/QuestionService';
@@ -126,7 +125,9 @@ export const Questionnaire = () => {
       }
       Voice.onSpeechStart = onSpeechStart;
       Voice.onSpeechEnd = onSpeechEnd;
-      Voice.onSpeechPartialResults = onSpeechPartialResults;
+      if (Platform.OS === 'android')
+        Voice.onSpeechResults = onSpeechPartialResults;
+      else Voice.onSpeechPartialResults = onSpeechPartialResults;
       Voice.onSpeechError = onSpeechError;
 
       try {
