@@ -69,7 +69,12 @@ export const Questionnaire = () => {
   };
 
   const startRecording = () => {
-    return Voice.start('en-US');
+    return Voice.start(
+      'en-US',
+      Platform.OS === 'android'
+        ? {RECOGNIZER_ENGINE: 'GOOGLE', EXTRA_PARTIAL_RESULTS: true}
+        : undefined,
+    );
   };
 
   // VOICE HANDLERS
