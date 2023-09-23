@@ -461,7 +461,7 @@ export const Questionnaire = () => {
             return (
               <Button
                 title={`${answerIndex + 1}.   ${ans}`}
-                accessible={false}
+                accessible={Platform.OS === 'android' ? true : false}
                 titleStyle={{
                   color: 'white',
                   fontSize: 25,
