@@ -116,9 +116,14 @@ export const Questionnaire = () => {
         if (!ttsInitStatus) {
           throw new Error('TTS initialization Failed');
         }
-        TTS.addEventListener('tts-start', 'start', ttsStartHandler);
-        TTS.addEventListener('tts-finish', 'finsih', ttsFinishHandler);
-        TTS.addEventListener('tts-cancel', 'cancel', ttsCancelHandler);
+        TTS.addEventListener('tts-start', ttsStartHandler);
+        TTS.addEventListener('tts-finish', ttsFinishHandler);
+        TTS.addEventListener('tts-cancel', ttsCancelHandler);
+        if (Platform.OS === 'ios') {
+          TTS.addEventListener('tts-start', ttsStartHandler);
+          TTS.addEventListener('tts-finish', ttsFinishHandler);
+          TTS.addEventListener('tts-cancel', ttsCancelHandler);
+        }
       } catch (error) {
         // TODO: HANDLE ERRORS IN TTS INITIALIZATION
         console.log('TTS INITIALIZATION ERROR', error);
@@ -141,9 +146,11 @@ export const Questionnaire = () => {
     init();
 
     return () => {
-      TTS.removeEventListener('tts-start', 'start', ttsStartHandler);
-      TTS.removeEventListener('tts-finish', 'finish', ttsFinishHandler);
-      TTS.removeEventListener('tts-cancel', 'cancel', ttsCancelHandler);
+      if (Platform.OS === 'ios') {
+        TTS.removeEventListener('tts-start', ttsStartHandler);
+        TTS.removeEventListener('tts-finish', ttsFinishHandler);
+        TTS.removeEventListener('tts-cancel', ttsCancelHandler);
+      }
       TTS.stop().catch(error => console.log('TTS STOP FAILED', error));
       Voice.destroy().catch(error =>
         console.log('DESTORYING VOICE FAILED', error),
