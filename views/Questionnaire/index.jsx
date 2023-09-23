@@ -1,4 +1,4 @@
-import {useEffect, useState} from 'react';
+import {useCallback, useEffect, useMemo, useState} from 'react';
 import Voice from '@react-native-voice/voice';
 import TTS from 'react-native-tts';
 import Geolocation from '@react-native-community/geolocation';
@@ -91,10 +91,10 @@ export const Questionnaire = () => {
   // TTS HANDLERS
   function ttsStartHandler(e) {
     console.log('TTS STARTED');
-    found.set(false);
     setTimeout(() => {
+      found.set(false);
       isVoiceStartupDisabled.set(false);
-    });
+    }, 1000);
     setTtsState(TTS_STATES.STARTED);
   }
 
@@ -116,18 +116,18 @@ export const Questionnaire = () => {
         if (!ttsInitStatus) {
           throw new Error('TTS initialization Failed');
         }
-        TTS.addEventListener('tts-start', ttsStartHandler);
-        TTS.addEventListener('tts-finish', ttsFinishHandler);
-        TTS.addEventListener('tts-cancel', ttsCancelHandler);
+        TTS.addEventListener('tts-start', 'start', ttsStartHandler);
+        TTS.addEventListener('tts-finish', 'finsih', ttsFinishHandler);
+        TTS.addEventListener('tts-cancel', 'cancel', ttsCancelHandler);
       } catch (error) {
         // TODO: HANDLE ERRORS IN TTS INITIALIZATION
         console.log('TTS INITIALIZATION ERROR', error);
       }
       Voice.onSpeechStart = onSpeechStart;
       Voice.onSpeechEnd = onSpeechEnd;
-      if (Platform.OS === 'android')
-        Voice.onSpeechResults = onSpeechPartialResults;
-      else Voice.onSpeechPartialResults = onSpeechPartialResults;
+
+      Voice.onSpeechResults = onSpeechPartialResults;
+      // else Voice.onSpeechPartialResults = onSpeechPartialResults;
       Voice.onSpeechError = onSpeechError;
 
       try {
@@ -141,6 +141,9 @@ export const Questionnaire = () => {
     init();
 
     return () => {
+      TTS.removeEventListener('tts-start', 'start', ttsStartHandler);
+      TTS.removeEventListener('tts-finish', 'finish', ttsFinishHandler);
+      TTS.removeEventListener('tts-cancel', 'cancel', ttsCancelHandler);
       TTS.stop().catch(error => console.log('TTS STOP FAILED', error));
       Voice.destroy().catch(error =>
         console.log('DESTORYING VOICE FAILED', error),
@@ -196,8 +199,13 @@ export const Questionnaire = () => {
   };
 
   const nextQuestion = async () => {
+    console.log('NEXT QUESTION');
     isVoiceStartupDisabled.set(true);
-    await TTS.stop();
+    try {
+      await TTS.stop();
+    } catch (error) {
+      console.log('TTS stop failed at next question');
+    }
     if (qStatus.questionIdx + 1 >= questions.length) {
       return setQStatus(q => ({...q, state: QUESTIONNAIRE_STATES.LOADING}));
     }
@@ -247,7 +255,9 @@ export const Questionnaire = () => {
       })
       .join();
 
-    TTS.speak(text + ans);
+    TTS.getInitStatus().then(() => {
+      TTS.speak(text + ans);
+    });
   };
 
   const saveData = async () => {
@@ -304,6 +314,7 @@ export const Questionnaire = () => {
 
   // HANDLE PARTIAL RESULT CHANGES
   useEffect(() => {
+    console.log(found.get());
     if (qStatus.state === QUESTIONNAIRE_STATES.BEFORE_STARTING || found.get())
       return;
 
@@ -356,10 +367,17 @@ export const Questionnaire = () => {
 
   useEffect(() => {
     if (ttsState === TTS_STATES.FINISHED) {
-      if (!isVoiceStartupDisabled.get()) startRecording();
+      if (!isVoiceStartupDisabled.get()) {
+        console.log('VOICE STARUP IS NOT DISABLED');
+        startRecording();
+      }
     }
     if (ttsState === TTS_STATES.CANCELLED) {
-      stopRecording();
+      try {
+        stopRecording();
+      } catch (error) {
+        console.log('STOP RECORDING FAILED AT TTS STATE');
+      }
     }
   }, [ttsState]);
 
@@ -490,18 +508,11 @@ export const Questionnaire = () => {
 
   if (qStatus.state == QUESTIONNAIRE_STATES.SAVED) {
     return (
-      // <View style={styles.containerSaved}>
-      //   {/* <Icon
-      //     name="checkcircleo"
-      //     size={200}
-      //     accessible={false}
-      //     color={'#4ec747'}
-      //     style={{marginBottom: 50}}
-      //   /> */}
-      //   <Text style={{color: '#4ec747', fontSize: 50}}>Saved</Text>
-      // </View>
+      <View style={styles.containerSaved}>
+        <Text style={{color: '#4ec747', fontSize: 50}}>Saved</Text>
+      </View>
 
-      <View></View>
+      // <View></View>
     );
   }
 
@@ -650,7 +661,6 @@ const styles = StyleSheet.create({
   },
   containerSaved: {
     display: 'flex',
-    direction: 'column',
     alignItems: 'center',
     width: '100%',
     height: '100%',
