@@ -69,12 +69,7 @@ export const Questionnaire = () => {
   };
 
   const startRecording = () => {
-    return Voice.start(
-      'en-US',
-      Platform.OS === 'android'
-        ? {RECOGNIZER_ENGINE: 'GOOGLE', EXTRA_PARTIAL_RESULTS: true}
-        : undefined,
-    );
+    return Voice.start('en-US');
   };
 
   // VOICE HANDLERS
@@ -422,13 +417,13 @@ export const Questionnaire = () => {
             beggining.
           </Text>
           <Text style={{fontSize: 16}}>
-            Press the <Text style={{color: '#4388d6'}}>"Start"</Text> button to
-            begin the questionnaire
+            Press the <Text style={{color: '#4388d6'}}>button</Text> below to
+            start the questionnaire
           </Text>
         </View>
         <View>
           <Button
-            title="Start"
+            title="Begin"
             size="lg"
             titleStyle={{
               color: 'white',

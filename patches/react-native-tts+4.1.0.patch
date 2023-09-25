@@ -1,14 +1,14 @@
-diff --git a/node_modules/react-native-tts/android/build/.transforms/070c30c1c2c56ff3cee144b67e70e5df/results.bin b/node_modules/react-native-tts/android/build/.transforms/070c30c1c2c56ff3cee144b67e70e5df/results.bin
+diff --git a/node_modules/react-native-tts/android/build/.transforms/2dcb5cabb610b94309680963dfd075f6/results.bin b/node_modules/react-native-tts/android/build/.transforms/2dcb5cabb610b94309680963dfd075f6/results.bin
 new file mode 100644
 index 0000000..0d259dd
 --- /dev/null
-+++ b/node_modules/react-native-tts/android/build/.transforms/070c30c1c2c56ff3cee144b67e70e5df/results.bin
++++ b/node_modules/react-native-tts/android/build/.transforms/2dcb5cabb610b94309680963dfd075f6/results.bin
 @@ -0,0 +1 @@
 +o/classes
-diff --git a/node_modules/react-native-tts/android/build/.transforms/070c30c1c2c56ff3cee144b67e70e5df/transformed/classes/classes.dex b/node_modules/react-native-tts/android/build/.transforms/070c30c1c2c56ff3cee144b67e70e5df/transformed/classes/classes.dex
+diff --git a/node_modules/react-native-tts/android/build/.transforms/2dcb5cabb610b94309680963dfd075f6/transformed/classes/classes.dex b/node_modules/react-native-tts/android/build/.transforms/2dcb5cabb610b94309680963dfd075f6/transformed/classes/classes.dex
 new file mode 100644
 index 0000000..dba3267
-Binary files /dev/null and b/node_modules/react-native-tts/android/build/.transforms/070c30c1c2c56ff3cee144b67e70e5df/transformed/classes/classes.dex differ
+Binary files /dev/null and b/node_modules/react-native-tts/android/build/.transforms/2dcb5cabb610b94309680963dfd075f6/transformed/classes/classes.dex differ
 diff --git a/node_modules/react-native-tts/android/build/generated/source/buildConfig/debug/net/no_mad/tts/BuildConfig.java b/node_modules/react-native-tts/android/build/generated/source/buildConfig/debug/net/no_mad/tts/BuildConfig.java
 new file mode 100644
 index 0000000..63ca074
@@ -2053,46 +2053,46 @@ index 0000000..7c9d30e
 +int xml rn_dev_preferences 0x0
 diff --git a/node_modules/react-native-tts/android/build/intermediates/incremental/debug/packageDebugResources/compile-file-map.properties b/node_modules/react-native-tts/android/build/intermediates/incremental/debug/packageDebugResources/compile-file-map.properties
 new file mode 100644
-index 0000000..1d3c41b
+index 0000000..0524a95
 --- /dev/null
 +++ b/node_modules/react-native-tts/android/build/intermediates/incremental/debug/packageDebugResources/compile-file-map.properties
 @@ -0,0 +1 @@
-+#Fri Sep 22 18:40:14 PDT 2023
++#Fri Sep 22 21:49:25 PDT 2023
 diff --git a/node_modules/react-native-tts/android/build/intermediates/incremental/debug/packageDebugResources/merger.xml b/node_modules/react-native-tts/android/build/intermediates/incremental/debug/packageDebugResources/merger.xml
 new file mode 100644
-index 0000000..97b0006
+index 0000000..2cb94b0
 --- /dev/null
 +++ b/node_modules/react-native-tts/android/build/intermediates/incremental/debug/packageDebugResources/merger.xml
 @@ -0,0 +1,2 @@
 +<?xml version="1.0" encoding="utf-8"?>
-+<merger version="3"><dataSet aapt-namespace="http://schemas.android.com/apk/res-auto" config="main$Generated" generated="true" ignore_pattern="!.svn:!.git:!.ds_store:!*.scc:.*:&lt;dir>_*:!CVS:!thumbs.db:!picasa.ini:!*~"><source path="/Users/bubu/HealthApplication/node_modules/react-native-tts/android/src/main/res"/><source path="/Users/bubu/HealthApplication/node_modules/react-native-tts/android/build/generated/res/rs/debug"/><source path="/Users/bubu/HealthApplication/node_modules/react-native-tts/android/build/generated/res/resValues/debug"/></dataSet><dataSet aapt-namespace="http://schemas.android.com/apk/res-auto" config="main" generated-set="main$Generated" ignore_pattern="!.svn:!.git:!.ds_store:!*.scc:.*:&lt;dir>_*:!CVS:!thumbs.db:!picasa.ini:!*~"><source path="/Users/bubu/HealthApplication/node_modules/react-native-tts/android/src/main/res"/><source path="/Users/bubu/HealthApplication/node_modules/react-native-tts/android/build/generated/res/rs/debug"/><source path="/Users/bubu/HealthApplication/node_modules/react-native-tts/android/build/generated/res/resValues/debug"/></dataSet><dataSet aapt-namespace="http://schemas.android.com/apk/res-auto" config="debug$Generated" generated="true" ignore_pattern="!.svn:!.git:!.ds_store:!*.scc:.*:&lt;dir>_*:!CVS:!thumbs.db:!picasa.ini:!*~"><source path="/Users/bubu/HealthApplication/node_modules/react-native-tts/android/src/debug/res"/></dataSet><dataSet aapt-namespace="http://schemas.android.com/apk/res-auto" config="debug" generated-set="debug$Generated" ignore_pattern="!.svn:!.git:!.ds_store:!*.scc:.*:&lt;dir>_*:!CVS:!thumbs.db:!picasa.ini:!*~"><source path="/Users/bubu/HealthApplication/node_modules/react-native-tts/android/src/debug/res"/></dataSet><dataSet aapt-namespace="http://schemas.android.com/apk/res-auto" config="generated$Generated" generated="true" ignore_pattern="!.svn:!.git:!.ds_store:!*.scc:.*:&lt;dir>_*:!CVS:!thumbs.db:!picasa.ini:!*~"/><dataSet aapt-namespace="http://schemas.android.com/apk/res-auto" config="generated" generated-set="generated$Generated" ignore_pattern="!.svn:!.git:!.ds_store:!*.scc:.*:&lt;dir>_*:!CVS:!thumbs.db:!picasa.ini:!*~"/><mergedItems/></merger>
++<merger version="3"><dataSet aapt-namespace="http://schemas.android.com/apk/res-auto" config="main$Generated" generated="true" ignore_pattern="!.svn:!.git:!.ds_store:!*.scc:.*:&lt;dir>_*:!CVS:!thumbs.db:!picasa.ini:!*~"><source path="C:\Users\aidan\HealthApplication\node_modules\react-native-tts\android\src\main\res"/><source path="C:\Users\aidan\HealthApplication\node_modules\react-native-tts\android\build\generated\res\rs\debug"/><source path="C:\Users\aidan\HealthApplication\node_modules\react-native-tts\android\build\generated\res\resValues\debug"/></dataSet><dataSet aapt-namespace="http://schemas.android.com/apk/res-auto" config="main" generated-set="main$Generated" ignore_pattern="!.svn:!.git:!.ds_store:!*.scc:.*:&lt;dir>_*:!CVS:!thumbs.db:!picasa.ini:!*~"><source path="C:\Users\aidan\HealthApplication\node_modules\react-native-tts\android\src\main\res"/><source path="C:\Users\aidan\HealthApplication\node_modules\react-native-tts\android\build\generated\res\rs\debug"/><source path="C:\Users\aidan\HealthApplication\node_modules\react-native-tts\android\build\generated\res\resValues\debug"/></dataSet><dataSet aapt-namespace="http://schemas.android.com/apk/res-auto" config="debug$Generated" generated="true" ignore_pattern="!.svn:!.git:!.ds_store:!*.scc:.*:&lt;dir>_*:!CVS:!thumbs.db:!picasa.ini:!*~"><source path="C:\Users\aidan\HealthApplication\node_modules\react-native-tts\android\src\debug\res"/></dataSet><dataSet aapt-namespace="http://schemas.android.com/apk/res-auto" config="debug" generated-set="debug$Generated" ignore_pattern="!.svn:!.git:!.ds_store:!*.scc:.*:&lt;dir>_*:!CVS:!thumbs.db:!picasa.ini:!*~"><source path="C:\Users\aidan\HealthApplication\node_modules\react-native-tts\android\src\debug\res"/></dataSet><dataSet aapt-namespace="http://schemas.android.com/apk/res-auto" config="generated$Generated" generated="true" ignore_pattern="!.svn:!.git:!.ds_store:!*.scc:.*:&lt;dir>_*:!CVS:!thumbs.db:!picasa.ini:!*~"/><dataSet aapt-namespace="http://schemas.android.com/apk/res-auto" config="generated" generated-set="generated$Generated" ignore_pattern="!.svn:!.git:!.ds_store:!*.scc:.*:&lt;dir>_*:!CVS:!thumbs.db:!picasa.ini:!*~"/><mergedItems/></merger>
 \ No newline at end of file
 diff --git a/node_modules/react-native-tts/android/build/intermediates/incremental/mergeDebugJniLibFolders/merger.xml b/node_modules/react-native-tts/android/build/intermediates/incremental/mergeDebugJniLibFolders/merger.xml
 new file mode 100644
-index 0000000..846d210
+index 0000000..047b234
 --- /dev/null
 +++ b/node_modules/react-native-tts/android/build/intermediates/incremental/mergeDebugJniLibFolders/merger.xml
 @@ -0,0 +1,2 @@
 +<?xml version="1.0" encoding="utf-8"?>
-+<merger version="3"><dataSet config="main" ignore_pattern="!.svn:!.git:!.ds_store:!*.scc:.*:&lt;dir>_*:!CVS:!thumbs.db:!picasa.ini:!*~"><source path="/Users/bubu/HealthApplication/node_modules/react-native-tts/android/src/main/jniLibs"/></dataSet><dataSet config="debug" ignore_pattern="!.svn:!.git:!.ds_store:!*.scc:.*:&lt;dir>_*:!CVS:!thumbs.db:!picasa.ini:!*~"><source path="/Users/bubu/HealthApplication/node_modules/react-native-tts/android/src/debug/jniLibs"/></dataSet></merger>
++<merger version="3"><dataSet config="main" ignore_pattern="!.svn:!.git:!.ds_store:!*.scc:.*:&lt;dir>_*:!CVS:!thumbs.db:!picasa.ini:!*~"><source path="C:\Users\aidan\HealthApplication\node_modules\react-native-tts\android\src\main\jniLibs"/></dataSet><dataSet config="debug" ignore_pattern="!.svn:!.git:!.ds_store:!*.scc:.*:&lt;dir>_*:!CVS:!thumbs.db:!picasa.ini:!*~"><source path="C:\Users\aidan\HealthApplication\node_modules\react-native-tts\android\src\debug\jniLibs"/></dataSet></merger>
 \ No newline at end of file
 diff --git a/node_modules/react-native-tts/android/build/intermediates/incremental/mergeDebugShaders/merger.xml b/node_modules/react-native-tts/android/build/intermediates/incremental/mergeDebugShaders/merger.xml
 new file mode 100644
-index 0000000..5ef1e08
+index 0000000..cb6c885
 --- /dev/null
 +++ b/node_modules/react-native-tts/android/build/intermediates/incremental/mergeDebugShaders/merger.xml
 @@ -0,0 +1,2 @@
 +<?xml version="1.0" encoding="utf-8"?>
-+<merger version="3"><dataSet config="main" ignore_pattern="!.svn:!.git:!.ds_store:!*.scc:.*:&lt;dir>_*:!CVS:!thumbs.db:!picasa.ini:!*~"><source path="/Users/bubu/HealthApplication/node_modules/react-native-tts/android/src/main/shaders"/></dataSet><dataSet config="debug" ignore_pattern="!.svn:!.git:!.ds_store:!*.scc:.*:&lt;dir>_*:!CVS:!thumbs.db:!picasa.ini:!*~"><source path="/Users/bubu/HealthApplication/node_modules/react-native-tts/android/src/debug/shaders"/></dataSet></merger>
++<merger version="3"><dataSet config="main" ignore_pattern="!.svn:!.git:!.ds_store:!*.scc:.*:&lt;dir>_*:!CVS:!thumbs.db:!picasa.ini:!*~"><source path="C:\Users\aidan\HealthApplication\node_modules\react-native-tts\android\src\main\shaders"/></dataSet><dataSet config="debug" ignore_pattern="!.svn:!.git:!.ds_store:!*.scc:.*:&lt;dir>_*:!CVS:!thumbs.db:!picasa.ini:!*~"><source path="C:\Users\aidan\HealthApplication\node_modules\react-native-tts\android\src\debug\shaders"/></dataSet></merger>
 \ No newline at end of file
 diff --git a/node_modules/react-native-tts/android/build/intermediates/incremental/packageDebugAssets/merger.xml b/node_modules/react-native-tts/android/build/intermediates/incremental/packageDebugAssets/merger.xml
 new file mode 100644
-index 0000000..8114107
+index 0000000..3a81a7f
 --- /dev/null
 +++ b/node_modules/react-native-tts/android/build/intermediates/incremental/packageDebugAssets/merger.xml
 @@ -0,0 +1,2 @@
 +<?xml version="1.0" encoding="utf-8"?>
-+<merger version="3"><dataSet config="main" ignore_pattern="!.svn:!.git:!.ds_store:!*.scc:.*:&lt;dir>_*:!CVS:!thumbs.db:!picasa.ini:!*~"><source path="/Users/bubu/HealthApplication/node_modules/react-native-tts/android/src/main/assets"/><source path="/Users/bubu/HealthApplication/node_modules/react-native-tts/android/build/intermediates/shader_assets/debug/out"/></dataSet><dataSet config="debug" ignore_pattern="!.svn:!.git:!.ds_store:!*.scc:.*:&lt;dir>_*:!CVS:!thumbs.db:!picasa.ini:!*~"><source path="/Users/bubu/HealthApplication/node_modules/react-native-tts/android/src/debug/assets"/></dataSet></merger>
++<merger version="3"><dataSet config="main" ignore_pattern="!.svn:!.git:!.ds_store:!*.scc:.*:&lt;dir>_*:!CVS:!thumbs.db:!picasa.ini:!*~"><source path="C:\Users\aidan\HealthApplication\node_modules\react-native-tts\android\src\main\assets"/><source path="C:\Users\aidan\HealthApplication\node_modules\react-native-tts\android\build\intermediates\shader_assets\debug\out"/></dataSet><dataSet config="debug" ignore_pattern="!.svn:!.git:!.ds_store:!*.scc:.*:&lt;dir>_*:!CVS:!thumbs.db:!picasa.ini:!*~"><source path="C:\Users\aidan\HealthApplication\node_modules\react-native-tts\android\src\debug\assets"/></dataSet></merger>
 \ No newline at end of file
 diff --git a/node_modules/react-native-tts/android/build/intermediates/javac/debug/classes/net/no_mad/tts/BuildConfig.class b/node_modules/react-native-tts/android/build/intermediates/javac/debug/classes/net/no_mad/tts/BuildConfig.class
 new file mode 100644
@@ -2128,7 +2128,7 @@ index 0000000..78ac5b8
 +local
 diff --git a/node_modules/react-native-tts/android/build/intermediates/manifest_merge_blame_file/debug/manifest-merger-blame-debug-report.txt b/node_modules/react-native-tts/android/build/intermediates/manifest_merge_blame_file/debug/manifest-merger-blame-debug-report.txt
 new file mode 100644
-index 0000000..1b48bd7
+index 0000000..d2cae64
 --- /dev/null
 +++ b/node_modules/react-native-tts/android/build/intermediates/manifest_merge_blame_file/debug/manifest-merger-blame-debug-report.txt
 @@ -0,0 +1,11 @@
@@ -2138,9 +2138,9 @@ index 0000000..1b48bd7
 +4
 +5    <uses-sdk
 +6        android:minSdkVersion="21"
-+6-->/Users/bubu/HealthApplication/node_modules/react-native-tts/android/src/main/AndroidManifest.xml
++6-->C:\Users\aidan\HealthApplication\node_modules\react-native-tts\android\src\main\AndroidManifest.xml
 +7        android:targetSdkVersion="33" />
-+7-->/Users/bubu/HealthApplication/node_modules/react-native-tts/android/src/main/AndroidManifest.xml
++7-->C:\Users\aidan\HealthApplication\node_modules\react-native-tts\android\src\main\AndroidManifest.xml
 +8
 +9</manifest>
 diff --git a/node_modules/react-native-tts/android/build/intermediates/merged_manifest/debug/AndroidManifest.xml b/node_modules/react-native-tts/android/build/intermediates/merged_manifest/debug/AndroidManifest.xml
@@ -3650,74 +3650,36 @@ index 0000000..c709988
 +xml rn_dev_preferences
 diff --git a/node_modules/react-native-tts/android/build/outputs/logs/manifest-merger-debug-report.txt b/node_modules/react-native-tts/android/build/outputs/logs/manifest-merger-debug-report.txt
 new file mode 100644
-index 0000000..dcf5284
+index 0000000..fe62037
 --- /dev/null
 +++ b/node_modules/react-native-tts/android/build/outputs/logs/manifest-merger-debug-report.txt
 @@ -0,0 +1,25 @@
 +-- Merging decision tree log ---
 +manifest
-+ADDED from /Users/bubu/HealthApplication/node_modules/react-native-tts/android/src/main/AndroidManifest.xml:1:1-2:12
-+INJECTED from /Users/bubu/HealthApplication/node_modules/react-native-tts/android/src/main/AndroidManifest.xml:1:1-2:12
-+INJECTED from /Users/bubu/HealthApplication/node_modules/react-native-tts/android/src/main/AndroidManifest.xml:1:1-2:12
++ADDED from C:\Users\aidan\HealthApplication\node_modules\react-native-tts\android\src\main\AndroidManifest.xml:1:1-2:12
++INJECTED from C:\Users\aidan\HealthApplication\node_modules\react-native-tts\android\src\main\AndroidManifest.xml:1:1-2:12
++INJECTED from C:\Users\aidan\HealthApplication\node_modules\react-native-tts\android\src\main\AndroidManifest.xml:1:1-2:12
 +	package
-+		ADDED from /Users/bubu/HealthApplication/node_modules/react-native-tts/android/src/main/AndroidManifest.xml:1:70-94
-+		INJECTED from /Users/bubu/HealthApplication/node_modules/react-native-tts/android/src/main/AndroidManifest.xml
-+		INJECTED from /Users/bubu/HealthApplication/node_modules/react-native-tts/android/src/main/AndroidManifest.xml
++		ADDED from C:\Users\aidan\HealthApplication\node_modules\react-native-tts\android\src\main\AndroidManifest.xml:1:70-94
++		INJECTED from C:\Users\aidan\HealthApplication\node_modules\react-native-tts\android\src\main\AndroidManifest.xml
++		INJECTED from C:\Users\aidan\HealthApplication\node_modules\react-native-tts\android\src\main\AndroidManifest.xml
 +	xmlns:android
-+		ADDED from /Users/bubu/HealthApplication/node_modules/react-native-tts/android/src/main/AndroidManifest.xml:1:11-69
++		ADDED from C:\Users\aidan\HealthApplication\node_modules\react-native-tts\android\src\main\AndroidManifest.xml:1:11-69
 +uses-sdk
-+INJECTED from /Users/bubu/HealthApplication/node_modules/react-native-tts/android/src/main/AndroidManifest.xml reason: use-sdk injection requested
-+INJECTED from /Users/bubu/HealthApplication/node_modules/react-native-tts/android/src/main/AndroidManifest.xml
-+INJECTED from /Users/bubu/HealthApplication/node_modules/react-native-tts/android/src/main/AndroidManifest.xml
-+INJECTED from /Users/bubu/HealthApplication/node_modules/react-native-tts/android/src/main/AndroidManifest.xml
-+INJECTED from /Users/bubu/HealthApplication/node_modules/react-native-tts/android/src/main/AndroidManifest.xml
++INJECTED from C:\Users\aidan\HealthApplication\node_modules\react-native-tts\android\src\main\AndroidManifest.xml reason: use-sdk injection requested
++INJECTED from C:\Users\aidan\HealthApplication\node_modules\react-native-tts\android\src\main\AndroidManifest.xml
++INJECTED from C:\Users\aidan\HealthApplication\node_modules\react-native-tts\android\src\main\AndroidManifest.xml
++INJECTED from C:\Users\aidan\HealthApplication\node_modules\react-native-tts\android\src\main\AndroidManifest.xml
++INJECTED from C:\Users\aidan\HealthApplication\node_modules\react-native-tts\android\src\main\AndroidManifest.xml
 +	android:targetSdkVersion
-+		INJECTED from /Users/bubu/HealthApplication/node_modules/react-native-tts/android/src/main/AndroidManifest.xml
-+		ADDED from /Users/bubu/HealthApplication/node_modules/react-native-tts/android/src/main/AndroidManifest.xml
-+		INJECTED from /Users/bubu/HealthApplication/node_modules/react-native-tts/android/src/main/AndroidManifest.xml
++		INJECTED from C:\Users\aidan\HealthApplication\node_modules\react-native-tts\android\src\main\AndroidManifest.xml
++		ADDED from C:\Users\aidan\HealthApplication\node_modules\react-native-tts\android\src\main\AndroidManifest.xml
++		INJECTED from C:\Users\aidan\HealthApplication\node_modules\react-native-tts\android\src\main\AndroidManifest.xml
 +	android:minSdkVersion
-+		INJECTED from /Users/bubu/HealthApplication/node_modules/react-native-tts/android/src/main/AndroidManifest.xml
-+		ADDED from /Users/bubu/HealthApplication/node_modules/react-native-tts/android/src/main/AndroidManifest.xml
-+		INJECTED from /Users/bubu/HealthApplication/node_modules/react-native-tts/android/src/main/AndroidManifest.xml
++		INJECTED from C:\Users\aidan\HealthApplication\node_modules\react-native-tts\android\src\main\AndroidManifest.xml
++		ADDED from C:\Users\aidan\HealthApplication\node_modules\react-native-tts\android\src\main\AndroidManifest.xml
++		INJECTED from C:\Users\aidan\HealthApplication\node_modules\react-native-tts\android\src\main\AndroidManifest.xml
 diff --git a/node_modules/react-native-tts/android/build/tmp/compileDebugJavaWithJavac/previous-compilation-data.bin b/node_modules/react-native-tts/android/build/tmp/compileDebugJavaWithJavac/previous-compilation-data.bin
 new file mode 100644
-index 0000000..ce0d549
+index 0000000..af1c4b8
 Binary files /dev/null and b/node_modules/react-native-tts/android/build/tmp/compileDebugJavaWithJavac/previous-compilation-data.bin differ
-diff --git a/node_modules/react-native-tts/index.js b/node_modules/react-native-tts/index.js
-index 6da7573..f9c9ddd 100644
---- a/node_modules/react-native-tts/index.js
-+++ b/node_modules/react-native-tts/index.js
-@@ -7,6 +7,8 @@ class Tts extends NativeEventEmitter {
-     super(TextToSpeech);
-   }
- 
-+  eventSubscription = new Map(); 
-+
-   getInitStatus() {
-     if (Platform.OS === 'ios' || Platform.OS === 'windows') {
-       return Promise.resolve(true);
-@@ -116,11 +118,19 @@ class Tts extends NativeEventEmitter {
-   }
- 
-   addEventListener(type, handler) {
--    return this.addListener(type, handler);
--  }
--
--  removeEventListener(type, handler) {
--    this.removeListener(type, handler);
-+    listener = this.addListener(type, handler);
-+    const uniqueKey = [type, handler];
-+    this.eventSubscription.set(uniqueKey, listener)
-+    return listener
-+  }
-+
-+  removeEventListener = (type, handler) => {
-+      const uniqueKey = [type, handler];
-+      const listener = this.eventSubscription.get(uniqueKey);
-+      if (listener) {
-+        listener.remove();
-+        this.eventSubscription.delete(uniqueKey);
-+    }
-   }
- }
- 
