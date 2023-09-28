@@ -7,7 +7,6 @@ import {Alert, Platform} from 'react-native';
 import {View, StyleSheet, ScrollView} from 'react-native';
 import {Button, Divider, Text, LinearProgress} from '@rneui/themed';
 import QuestionService from '../../services/QuestionService';
-import useTrait from '../../hooks/useTrait';
 // import Icon from 'react-native-vector-icons/AntDesign';
 
 export const Questionnaire = () => {
@@ -42,10 +41,6 @@ export const Questionnaire = () => {
     eight: 8,
     nine: 9,
   };
-
-  // FLAGS
-  const found = useTrait(false);
-  const isVoiceStartupDisabled = useTrait(false);
 
   // VOICE
   const [partialResults, setPartialResults] = useState('');
@@ -344,12 +339,15 @@ export const Questionnaire = () => {
       console.log('FOUND FOUND FOUND');
       selectAnswer(answers[numbersInWords[number] - 1]);
     } else {
-      for (const answ of answers) {
-        console.log(answ);
-        if (text.toLowerCase().includes(answ.toLowerCase())) {
-          // found.set(true);
-          console.log('FOUND FOUND FOUND');
-          selectAnswer(answ);
+      for (const text of partialResults.results) {
+        for (const answ of answers) {
+          console.log(answ);
+          if (text.toLowerCase().includes(answ.toLowerCase())) {
+            // found.set(true);
+            console.log('FOUND FOUND FOUND');
+            selectAnswer(answ);
+            return;
+          }
         }
       }
     }
@@ -381,10 +379,8 @@ export const Questionnaire = () => {
 
   useEffect(() => {
     if (ttsState === TTS_STATES.FINISHED) {
-      if (!isVoiceStartupDisabled.get()) {
-        console.log('STARTING RECORDING');
-        startRecording();
-      }
+      console.log('STARTING RECORDING');
+      startRecording();
     }
     if (ttsState === TTS_STATES.CANCELLED) {
       try {
