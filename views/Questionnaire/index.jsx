@@ -81,7 +81,25 @@ export const Questionnaire = () => {
   }
   function onSpeechPartialResults(e) {
     console.log('onSpeechPartialResults: ', e);
-    setPartialResults(e.value);
+    const milis = new Date().getTime();
+
+    setPartialResults(prevState => {
+      if (
+        prevState &&
+        e.value[0] === prevState.results[0] &&
+        milis - prevState.collectedAt <= 1000
+      ) {
+        // console.log(
+        //   'returning',
+        //   prevState,
+        //   e.value[0] === prevState.results[0],
+        //   milis - prevState.collectedAt <= 1000,
+        // );
+        return prevState;
+      }
+      console.log('Setting new value: ', e.value);
+      return {results: e.value, collectedAt: milis};
+    });
   }
 
   function onSpeechError(e) {
@@ -91,20 +109,16 @@ export const Questionnaire = () => {
   // TTS HANDLERS
   function ttsStartHandler(e) {
     console.log('TTS STARTED');
-    setTimeout(() => {
-      found.set(false);
-      isVoiceStartupDisabled.set(false);
-    }, 1000);
     setTtsState(TTS_STATES.STARTED);
   }
 
   function ttsFinishHandler(e) {
-    console.log('TTS FINISHED');
+    console.log('TTS FINISHED: ', e);
     setTtsState(TTS_STATES.FINISHED);
   }
 
   function ttsCancelHandler(e) {
-    console.log(e);
+    console.log('TTS CANCELLED: ', e);
     setTtsState(TTS_STATES.CANCELLED);
   }
 
@@ -119,11 +133,6 @@ export const Questionnaire = () => {
         TTS.addEventListener('tts-start', ttsStartHandler);
         TTS.addEventListener('tts-finish', ttsFinishHandler);
         TTS.addEventListener('tts-cancel', ttsCancelHandler);
-        if (Platform.OS === 'ios') {
-          TTS.addEventListener('tts-start', ttsStartHandler);
-          TTS.addEventListener('tts-finish', ttsFinishHandler);
-          TTS.addEventListener('tts-cancel', ttsCancelHandler);
-        }
       } catch (error) {
         // TODO: HANDLE ERRORS IN TTS INITIALIZATION
         console.log('TTS INITIALIZATION ERROR', error);
@@ -131,9 +140,9 @@ export const Questionnaire = () => {
       Voice.onSpeechStart = onSpeechStart;
       Voice.onSpeechEnd = onSpeechEnd;
 
-      Voice.onSpeechResults = onSpeechPartialResults;
-      if (Platform.OS === 'android')
-        Voice.onSpeechPartialResults = onSpeechPartialResults;
+      // Voice.onSpeechResults = onSpeechPartialResults;
+      // if (Platform.OS === 'android')
+      Voice.onSpeechPartialResults = onSpeechPartialResults;
       Voice.onSpeechError = onSpeechError;
 
       try {
@@ -207,8 +216,6 @@ export const Questionnaire = () => {
   };
 
   const nextQuestion = async () => {
-    console.log('NEXT QUESTION');
-    isVoiceStartupDisabled.set(true);
     try {
       await TTS.stop();
     } catch (error) {
@@ -322,32 +329,31 @@ export const Questionnaire = () => {
 
   // HANDLE PARTIAL RESULT CHANGES
   useEffect(() => {
-    console.log(found.get());
-    if (qStatus.state === QUESTIONNAIRE_STATES.BEFORE_STARTING || found.get())
-      return;
+    console.log('FIRED');
+    if (qStatus.state === QUESTIONNAIRE_STATES.BEFORE_STARTING) return;
 
     const {answers} = questions[qStatus.questionIdx];
 
-    const text = partialResults[0];
+    const text = partialResults.results[0];
     if (!text) return;
 
     const words = text.split(' ');
     const number = words[words.length - 1].toLowerCase();
-
     if (numbersInWords[number] && numbersInWords[number] <= answers.length) {
+      // found.set(true);
       console.log('FOUND FOUND FOUND');
-      found.set(true);
       selectAnswer(answers[numbersInWords[number] - 1]);
     } else {
       for (const answ of answers) {
+        console.log(answ);
         if (text.toLowerCase().includes(answ.toLowerCase())) {
-          found.set(true);
+          // found.set(true);
           console.log('FOUND FOUND FOUND');
           selectAnswer(answ);
         }
       }
     }
-  }, [partialResults]);
+  }, [partialResults.results]);
 
   // QUESTIONNAIRE STATE CHANGE
   useEffect(() => {
@@ -376,7 +382,7 @@ export const Questionnaire = () => {
   useEffect(() => {
     if (ttsState === TTS_STATES.FINISHED) {
       if (!isVoiceStartupDisabled.get()) {
-        console.log('VOICE STARUP IS NOT DISABLED');
+        console.log('STARTING RECORDING');
         startRecording();
       }
     }
