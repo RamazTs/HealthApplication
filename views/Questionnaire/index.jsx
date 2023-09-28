@@ -11,6 +11,7 @@ import QuestionService from '../../services/QuestionService';
 
 export const Questionnaire = () => {
   const questionService = new QuestionService();
+  const TIME_FOR_LOCK = 1500;
 
   const QUESTIONNAIRE_STATES = {
     BEFORE_STARTING: 'BEFORE_STARTING',
@@ -57,6 +58,7 @@ export const Questionnaire = () => {
     questionIdx: 0,
     answeredQuestions: [],
     externalData: {},
+    lastAnswerSet: 0,
   });
 
   const stopRecording = () => {
@@ -79,10 +81,13 @@ export const Questionnaire = () => {
     const milis = new Date().getTime();
 
     setPartialResults(prevState => {
+      // TODO:
+      // HACK 3: LOCKING INPUT FROM VOICE, IF WE HAVE DUPLICATE RESULTS FIRING, THIS IS CAUSED BY VOICE ENGINE GENERATING CONTEXT AND POTENTIALLY ALTERING THE SENTENCE
+      // SOMETIMES ALTERATIONS DO NOT HAPPEN AND THE SAME RESULT IS DUPLICATED
       if (
         prevState &&
         e.value[0] === prevState.results[0] &&
-        milis - prevState.collectedAt <= 1500
+        milis - prevState.collectedAt <= TIME_FOR_LOCK
       ) {
         // console.log(
         //   'returning',
@@ -93,8 +98,9 @@ export const Questionnaire = () => {
         return prevState;
       }
 
-      // check for case when For and Four are fired sequenctially (we transform the text of previous answer and current answer to numerical values and compare the two)
-      if (prevState && milis - prevState.collectedAt <= 1500) {
+      // TODO:
+      // HACK 2: check for case when For and Four are fired sequenctially (we transform the text of previous answer and current answer to numerical values and compare the two)
+      if (prevState && milis - prevState.collectedAt <= TIME_FOR_LOCK) {
         const newText = e.value[0];
         const oldText = prevState.results[0];
         if (!oldText || !newText) return prevState;
@@ -243,6 +249,7 @@ export const Questionnaire = () => {
   const selectAnswer = answer => {
     stopRecording().then(
       setQStatus(q => {
+        const lastAnswerSet = new Date().getTime();
         return {
           ...q,
           answeredQuestions: [
@@ -252,6 +259,7 @@ export const Questionnaire = () => {
               patientAnswer: answer,
             },
           ],
+          lastAnswerSet,
         };
       }),
     );
@@ -397,6 +405,12 @@ export const Questionnaire = () => {
 
   useEffect(() => {
     if (ttsState === TTS_STATES.FINISHED) {
+      const time = new Date().getTime();
+
+      // TODO:
+      // HACK 1: THIS IS NEEDED TO AVOID STARTING THE RECORDING IF WE MANUALLY SELECT THE ANSWER
+      // TTS.FINISHED IS FIRED ON TTS.STOP as well as when TTS.SPEAK finishes talking
+      if (time - qStatus.lastAnswerSet <= TIME_FOR_LOCK) return;
       console.log('STARTING RECORDING');
       startRecording();
     }
