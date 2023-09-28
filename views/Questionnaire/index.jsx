@@ -82,8 +82,8 @@ export const Questionnaire = () => {
 
     setPartialResults(prevState => {
       // TODO:
-      // HACK 3: LOCKING INPUT FROM VOICE, IF WE HAVE DUPLICATE RESULTS FIRING, THIS IS CAUSED BY VOICE ENGINE GENERATING CONTEXT AND POTENTIALLY ALTERING THE SENTENCE
-      // SOMETIMES ALTERATIONS DO NOT HAPPEN AND THE SAME RESULT IS DUPLICATED
+      // HACK 3: LOCKING INPUT FROM VOICE IF WE HAVE DUPLICATE RESULTS FIRING. THIS IS CAUSED BY VOICE ENGINE GENERATING CONTEXT AND POTENTIALLY ALTERING THE SENTENCE
+      // SOMETIMES ALTERATIONS IN THE RESULTS DO NOT HAPPEN AND THE SAME RESULT IS FIRED TWICE
       if (
         prevState &&
         e.value[0] === prevState.results[0] &&
@@ -159,9 +159,9 @@ export const Questionnaire = () => {
       Voice.onSpeechStart = onSpeechStart;
       Voice.onSpeechEnd = onSpeechEnd;
 
-      // Voice.onSpeechResults = onSpeechPartialResults;
-      // if (Platform.OS === 'android')
-      Voice.onSpeechPartialResults = onSpeechPartialResults;
+      if (Platform.OS === 'android')
+        Voice.onSpeechResults = onSpeechPartialResults;
+      else Voice.onSpeechPartialResults = onSpeechPartialResults;
       Voice.onSpeechError = onSpeechError;
 
       try {
