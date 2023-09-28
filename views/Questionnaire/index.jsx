@@ -1,4 +1,4 @@
-import {useCallback, useEffect, useMemo, useState} from 'react';
+import {useEffect, useState} from 'react';
 import Voice from '@react-native-voice/voice';
 import TTS from 'react-native-tts';
 import Geolocation from '@react-native-community/geolocation';
@@ -82,7 +82,7 @@ export const Questionnaire = () => {
       if (
         prevState &&
         e.value[0] === prevState.results[0] &&
-        milis - prevState.collectedAt <= 1000
+        milis - prevState.collectedAt <= 1500
       ) {
         // console.log(
         //   'returning',
@@ -91,6 +91,24 @@ export const Questionnaire = () => {
         //   milis - prevState.collectedAt <= 1000,
         // );
         return prevState;
+      }
+
+      // check for case when For and Four are fired sequenctially (we transform the text of previous answer and current answer to numerical values and compare the two)
+      if (prevState && milis - prevState.collectedAt <= 1500) {
+        const newText = e.value[0];
+        const oldText = prevState.results[0];
+        if (!oldText || !newText) return prevState;
+        const newWords = newText.split(' ');
+        const newNumber = newWords[newWords.length - 1].toLowerCase();
+        const oldWords = oldText.split(' ');
+        const oldNumber = oldWords[oldWords.length - 1].toLowerCase();
+        if (
+          numbersInWords[newNumber] &&
+          numbersInWords[oldNumber] &&
+          numbersInWords[newNumber] === numbersInWords[oldNumber]
+        ) {
+          return prevState;
+        }
       }
       console.log('Setting new value: ', e.value);
       return {results: e.value, collectedAt: milis};
