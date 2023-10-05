@@ -5,6 +5,9 @@ import {
   TouchableOpacity,
   Text,
 } from 'react-native';
+import { initiateFitbitAuth, getAccessToken } from '../../components/Fitbit/index.js';
+import React, { useEffect } from 'react';
+import { Linking } from 'react-native';
 // import AntIcon from 'react-native-vector-icons/AntDesign';
 // import MaterialIcon from 'react-native-vector-icons/MaterialIcons';
 
@@ -13,6 +16,27 @@ export const Home = props => {
   const navigate = location => {
     navigation.push(location);
   };
+
+    useEffect(() => {
+    const handleDeepLink = (event) => {
+      let code = /code=([^&]+)/.exec(event.url);
+      if (code) {
+        code = code[1];
+        getAccessToken(code).then(token => {
+          console.log("Received Token:", token);
+        }).catch(err => {
+          console.error("Failed to get access token: ", err);
+        });
+      }
+    };
+
+    Linking.addEventListener('url', handleDeepLink);
+
+    return () => {
+      Linking.removeEventListener('url', handleDeepLink);
+    };
+  }, []);
+
 
   return (
     <SafeAreaView>
@@ -50,6 +74,21 @@ export const Home = props => {
             History
           </Text>
         </TouchableOpacity>
+
+        <TouchableOpacity
+      accessible={true}
+      accessibilityLabel="Connect to Fitbit"
+      accessibilityHint="Initiate Fitbit Authentication"
+      onPress={initiateFitbitAuth} 
+      style={{
+        ...styles.navigationButton,
+        ...styles.navigationButtonFitbit,
+      }}>
+      <Text accessible={false} style={styles.navigationButtonText}>
+        Connect to Fitbit
+      </Text>
+    </TouchableOpacity>
+
       </View>
     </SafeAreaView>
   );
