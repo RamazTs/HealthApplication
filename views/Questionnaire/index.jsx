@@ -265,6 +265,11 @@ export const Questionnaire = () => {
     );
   };
 
+  function getChoiceFromSpeech(text) {
+    const match = text.match(/choice (\d+)/i);
+    return match ? parseInt(match[1], 10) : null;
+  }
+
   const startQuestionnaire = () => {
     return setQStatus(q => ({...q, state: QUESTIONNAIRE_STATES.STARTED}));
   };
@@ -303,7 +308,7 @@ export const Questionnaire = () => {
     const ans = answers
       .map((ans, index) => {
         if (qStatus.questionIdx == 0) return index + 1 + ', ' + ans;
-        return index + 1 + ', ';
+        return 'choice ' + (index + 1) + ', ';
       })
       .join();
 
@@ -373,6 +378,13 @@ export const Questionnaire = () => {
 
     const text = partialResults.results[0];
     if (!text) return;
+
+    const choiceNumber = getChoiceFromSpeech(text);
+    if (choiceNumber && choiceNumber <= answers.length) {
+      console.log('FOUND FOUND FOUND via choice');
+      selectAnswer(answers[choiceNumber - 1]);
+      return;
+    }
 
     const words = text.split(' ');
     const number = words[words.length - 1].toLowerCase();
@@ -457,7 +469,11 @@ export const Questionnaire = () => {
             The Questionnaire consists of multiple multi-choice questions.
           </Text>
           <Text style={{marginBottom: 5, fontSize: 16}}>
-            You can answer each question by speaking the answer in full or the
+            If you are using an Android phone with the device's voice acess on please TURN VOICE ACCESS OFF
+            while completing the questionnaire. 
+          </Text>
+          <Text style={{marginBottom: 5, fontSize: 16}}>
+            You can answer each question by speaking the answer in full or by saying "choice" and then the
             number associated with the answer. The questionnaire can also be
             completed by manually selecting the answers.
           </Text>
@@ -466,8 +482,9 @@ export const Questionnaire = () => {
             view them in the history page or restart the questionnaire from the
             beggining.
           </Text>
+          
           <Text style={{fontSize: 16}}>
-            Press the <Text style={{color: '#4388d6'}}>button</Text> below to
+            Press the <Text style={{color: '#4388d6'}}>blue</Text> button below to
             start the questionnaire
           </Text>
         </View>
