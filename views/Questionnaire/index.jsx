@@ -278,6 +278,22 @@ export const Questionnaire = () => {
     });
   };
 
+  const cancelQuestionnaire = async () => {
+    try {
+      await TTS.stop();
+      await stopRecording();
+    } catch (error) {
+      console.error("Error cancelling TTS or Voice recording:", error);
+    }
+  
+    setQStatus({
+      state: QUESTIONNAIRE_STATES.BEFORE_STARTING,
+      questionIdx: 0,
+      answeredQuestions: [],
+      externalData: {},
+    });
+  };
+
   const readQuestion = async () => {
     const {question, answers} = questions[qStatus.questionIdx];
 
@@ -513,6 +529,22 @@ export const Questionnaire = () => {
               />
             );
           })}
+        </View>
+        <View style={{marginTop: 20}}>
+          <Button
+            title="Cancel Questionnaire"
+            buttonStyle={{
+              borderWidth: 1,
+              borderColor: '#ff0000',
+              borderRadius: 10,
+              backgroundColor: '#ffffff',
+            }}
+            titleStyle={{
+              color: '#ff0000',
+              fontSize: 20,
+            }}
+            onPress={cancelQuestionnaire}
+          />
         </View>
       </View>
     );

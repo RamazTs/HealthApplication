@@ -17,25 +17,47 @@ export const Home = props => {
     navigation.push(location);
   };
 
-    useEffect(() => {
+  useEffect(() => {
     const handleDeepLink = (event) => {
       let code = /code=([^&]+)/.exec(event.url);
       if (code) {
         code = code[1];
-        getAccessToken(code).then(token => {
-          console.log("Received Token:", token);
+        // Use the updated getAccessToken function here
+        getAccessToken(code).then(({ accessToken, refreshToken }) => { 
+          console.log("Received Access Token:", accessToken);
+          console.log("Received Refresh Token:", refreshToken);
         }).catch(err => {
           console.error("Failed to get access token: ", err);
         });
       }
     };
-
+  
     Linking.addEventListener('url', handleDeepLink);
-
+  
     return () => {
       Linking.removeEventListener('url', handleDeepLink);
     };
   }, []);
+
+  //   useEffect(() => {
+  //   const handleDeepLink = (event) => {
+  //     let code = /code=([^&]+)/.exec(event.url);
+  //     if (code) {
+  //       code = code[1];
+  //       getAccessToken(code).then(token => {
+  //         console.log("Received Token:", token);
+  //       }).catch(err => {
+  //         console.error("Failed to get access token: ", err);
+  //       });
+  //     }
+  //   };
+
+  //   Linking.addEventListener('url', handleDeepLink);
+
+  //   return () => {
+  //     Linking.removeEventListener('url', handleDeepLink);
+  //   };
+  // }, []);
 
 
   return (
