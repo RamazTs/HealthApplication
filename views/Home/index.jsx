@@ -97,7 +97,7 @@ export const Home = props => {
           </Text>
         </TouchableOpacity>
 
-        <TouchableOpacity
+        {/* <TouchableOpacity
       accessible={true}
       accessibilityLabel="Connect to Fitbit"
       accessibilityHint="Initiate Fitbit Authentication"
@@ -109,7 +109,7 @@ export const Home = props => {
       <Text accessible={false} style={styles.navigationButtonText}>
         Connect to Fitbit
       </Text>
-    </TouchableOpacity>
+    </TouchableOpacity> */}
 
       </View>
     </SafeAreaView>
