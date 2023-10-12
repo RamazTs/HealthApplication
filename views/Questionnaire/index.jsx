@@ -11,7 +11,7 @@ import QuestionService from '../../services/QuestionService';
 
 export const Questionnaire = () => {
   const questionService = new QuestionService();
-  const TIME_FOR_LOCK = 1500;
+  const TIME_FOR_LOCK = 5000;
 
   const QUESTIONNAIRE_STATES = {
     BEFORE_STARTING: 'BEFORE_STARTING',
@@ -303,7 +303,7 @@ export const Questionnaire = () => {
     const {question, answers} = questions[qStatus.questionIdx];
 
     const text =
-      'Question ' + (qStatus.questionIdx + 1) + '. ' + question + '; ';
+      'Question ' + (qStatus.questionIdx + 1) + ', ' + question + '; ';
 
     const ans = answers
       .map((ans, index) => {
