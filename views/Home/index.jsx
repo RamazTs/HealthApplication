@@ -162,4 +162,7 @@ const styles = StyleSheet.create({
   navigationButtonQuestionnaire: {
     backgroundColor: '#4388d6',
   },
+  navigationButtonFitbit: {
+    backgroundColor: '#4388d6',
+  },
 });
