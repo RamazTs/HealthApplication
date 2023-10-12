@@ -11,7 +11,7 @@ import QuestionService from '../../services/QuestionService';
 
 export const Questionnaire = () => {
   const questionService = new QuestionService();
-  const TIME_FOR_LOCK = 5000;
+  const TIME_FOR_LOCK = 1500;
 
   const QUESTIONNAIRE_STATES = {
     BEFORE_STARTING: 'BEFORE_STARTING',
@@ -66,7 +66,10 @@ export const Questionnaire = () => {
   };
 
   const startRecording = () => {
-    return Voice.start('en-US');
+    Voice.start('en-US');
+    setTimeout(() => {
+      stopRecording();
+    }, 5000); // Stop the recording after 5 seconds
   };
 
   // VOICE HANDLERS
