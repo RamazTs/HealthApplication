@@ -4,10 +4,10 @@ import {
   SafeAreaView,
   TouchableOpacity,
   Text,
+  Linking,
 } from 'react-native';
-import { initiateFitbitAuth, getAccessToken } from '../../components/Fitbit/index.js';
+import { initiateFitbitAuth, handleOpenURL } from '../../components/Fitbit/index.js';
 import React, { useEffect } from 'react';
-import { Linking } from 'react-native';
 // import AntIcon from 'react-native-vector-icons/AntDesign';
 // import MaterialIcon from 'react-native-vector-icons/MaterialIcons';
 
@@ -18,44 +18,19 @@ export const Home = props => {
   };
 
   useEffect(() => {
-    const handleDeepLink = (event) => {
-      let code = /code=([^&]+)/.exec(event.url);
-      if (code) {
-        code = code[1];
-        // Use the updated getAccessToken function here
-        getAccessToken(code).then(({ accessToken, refreshToken }) => { 
-          console.log("Received Access Token:", accessToken);
-          console.log("Received Refresh Token:", refreshToken);
-        }).catch(err => {
-          console.error("Failed to get access token: ", err);
-        });
-      }
-    };
-  
-    Linking.addEventListener('url', handleDeepLink);
-  
+    Linking.addEventListener('url', handleOpenURL);
+
     return () => {
-      Linking.removeEventListener('url', handleDeepLink);
+      Linking.removeEventListener('url', handleOpenURL);
     };
-  }, []);
-
-  //   useEffect(() => {
-  //   const handleDeepLink = (event) => {
-  //     let code = /code=([^&]+)/.exec(event.url);
-  //     if (code) {
-  //       code = code[1];
-  //       getAccessToken(code).then(token => {
-  //         console.log("Received Token:", token);
-  //       }).catch(err => {
-  //         console.error("Failed to get access token: ", err);
-  //       });
-  //     }
+}, []);
+  // useEffect(() => {
+  //   const handleOpenURL = (event) => {
+  //   console.log('Received URL:', event.url);
   //   };
-
-  //   Linking.addEventListener('url', handleDeepLink);
-
+  //   Linking.addEventListener('url', handleOpenURL);
   //   return () => {
-  //     Linking.removeEventListener('url', handleDeepLink);
+  //     Linking.removeEventListener('url', handleOpenURL);
   //   };
   // }, []);
 
@@ -97,7 +72,7 @@ export const Home = props => {
           </Text>
         </TouchableOpacity>
 
-        {/* <TouchableOpacity
+        <TouchableOpacity
       accessible={true}
       accessibilityLabel="Connect to Fitbit"
       accessibilityHint="Initiate Fitbit Authentication"
@@ -109,7 +84,7 @@ export const Home = props => {
       <Text accessible={false} style={styles.navigationButtonText}>
         Connect to Fitbit
       </Text>
-    </TouchableOpacity> */}
+    </TouchableOpacity>
 
       </View>
     </SafeAreaView>
