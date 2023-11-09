@@ -5,7 +5,7 @@ import { Buffer } from 'buffer';
 const CLIENT_ID = '23R9N8';
 const CLIENT_SECRET = 'c38fb42c784d996d64f96476dceee7ebe';
 const REDIRECT_URI = 'HealthApplication://callback';
-const AUTH_URL = `https://www.fitbit.com/oauth2/authorize?response_type=code&client_id=${CLIENT_ID}&redirect_uri=${REDIRECT_URI}&scope=profile sleep temperature&expires_in=604800`;
+const AUTH_URL = `https://www.fitbit.com/oauth2/authorize?response_type=code&client_id=${CLIENT_ID}&redirect_uri=${REDIRECT_URI}&scope=profile+sleep+temperature&expires_in=604800`;
 
 export const initiateFitbitAuth = () => {
   Linking.openURL(AUTH_URL);
@@ -17,7 +17,7 @@ function getQueryParameter(url, param) {
 }
 
 export const handleOpenURL = (event) => {
-  if (event.url.startsWith(REDIRECT_URI)) {
+  if (event.url.startsWith(REDIRECT_URI.toLowerCase)) {
     const code = getQueryParameter(event.url, 'code');
     if (code) {
       getAccessToken(code)
@@ -131,9 +131,6 @@ const getTemperatureData = async (accessToken) => {
     console.error('Error fetching temperature data:', error);
   }
 };
-
-
-
 
 
 

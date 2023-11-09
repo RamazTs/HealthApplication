@@ -43,6 +43,9 @@ export const Questionnaire = () => {
     nine: 9,
   };
 
+  // RECORDING
+  // const [isRecording, setIsRecording] = useState(false);
+
   // VOICE
   const [partialResults, setPartialResults] = useState('');
 
@@ -66,9 +69,11 @@ export const Questionnaire = () => {
   };
 
   const startRecording = () => {
+    // setIsRecording(true);
     Voice.start('en-US');
     setTimeout(() => {
       stopRecording();
+      // setIsRecording(false);
     }, 5000); // Stop the recording after 5 seconds
   };
 
@@ -82,6 +87,8 @@ export const Questionnaire = () => {
   function onSpeechPartialResults(e) {
     console.log('onSpeechPartialResults: ', e);
     const milis = new Date().getTime();
+    // if (!isRecording) return; // Ignore results if not recording
+    // console.log('onSpeechPartialResults: ', e);
 
     setPartialResults(prevState => {
       // TODO:
@@ -243,6 +250,9 @@ export const Questionnaire = () => {
     } catch (error) {
       console.log('TTS stop failed at next question');
     }
+    // if (isRecording) {
+    //   await new Promise(resolve => setTimeout(resolve, 5000));
+    // }
     if (qStatus.questionIdx + 1 >= questions.length) {
       return setQStatus(q => ({...q, state: QUESTIONNAIRE_STATES.LOADING}));
     }
