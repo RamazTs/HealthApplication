@@ -45,6 +45,7 @@ export const Questionnaire = () => {
 
   // RECORDING
   // const [isRecording, setIsRecording] = useState(false);
+  const [isManualNavigation, setIsManualNavigation] = useState(false);
 
   // VOICE
   const [partialResults, setPartialResults] = useState('');
@@ -244,7 +245,31 @@ export const Questionnaire = () => {
     return [location, weather];
   };
 
+  const goToPreviousQuestion = async () => {
+    // Stop any ongoing recording or TTS
+    setIsManualNavigation(true);
+    try {
+      await TTS.stop();
+    } catch (error) {
+      console.log('Error stopping TTS in goToPreviousQuestion', error);
+    }
+
+    setQStatus(q => {
+      if (q.questionIdx === 0) return q; // Check to prevent index going below 0
+      const newIdx = q.questionIdx - 1;
+      const updatedAnsweredQuestions = q.answeredQuestions.slice(0, newIdx);
+      return {
+        ...q,
+        questionIdx: newIdx,
+        answeredQuestions: updatedAnsweredQuestions,
+        state: QUESTIONNAIRE_STATES.STARTED, 
+      };
+    });
+  };
+  
+
   const nextQuestion = async () => {
+    setIsManualNavigation(true);
     try {
       await TTS.stop();
     } catch (error) {
@@ -276,6 +301,7 @@ export const Questionnaire = () => {
         };
       }),
     );
+    setIsManualNavigation(false);
   };
 
   function getChoiceFromSpeech(text) {
@@ -372,7 +398,10 @@ export const Questionnaire = () => {
 
   // CHECK CHAGES ON SAVED ANSWERED QUESTIONS
   useEffect(() => {
-    if (qStatus.state === QUESTIONNAIRE_STATES.BEFORE_STARTING) return;
+    if (qStatus.state === QUESTIONNAIRE_STATES.BEFORE_STARTING || isManualNavigation) {
+    setIsManualNavigation(false);
+    return;
+  }
     nextQuestion();
   }, [qStatus.answeredQuestions]);
 
@@ -560,6 +589,25 @@ export const Questionnaire = () => {
             );
           })}
         </View>
+
+        {qStatus.questionIdx > 0 && (
+        <View style={{marginTop: 10}}>
+          <Button
+            title="Previous Question"
+            buttonStyle={{
+              borderWidth: 1,
+              borderColor: '#4388d6',
+              borderRadius: 10,
+              backgroundColor: '#ffffff',         
+            }}
+            titleStyle={{
+              color: '#4388d6',
+              fontSize: 20,
+            }}
+            onPress={goToPreviousQuestion}
+          />
+        </View>
+      )}
         <View style={{marginTop: 20}}>
           <Button
             title="Cancel Questionnaire"
