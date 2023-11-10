@@ -6,8 +6,12 @@ import {
   Text,
   Linking,
 } from 'react-native';
-import { initiateFitbitAuth, handleOpenURL } from '../../components/Fitbit/index.js';
-import React, { useEffect } from 'react';
+import {
+  initiateFitbitAuth,
+  handleOpenURL,
+} from '../../components/Fitbit/index.js';
+import React, {useEffect} from 'react';
+
 // import AntIcon from 'react-native-vector-icons/AntDesign';
 // import MaterialIcon from 'react-native-vector-icons/MaterialIcons';
 
@@ -19,11 +23,7 @@ export const Home = props => {
 
   useEffect(() => {
     Linking.addEventListener('url', handleOpenURL);
-
-    return () => {
-      Linking.removeEventListener('url', handleOpenURL);
-    };
-}, []);
+  }, []);
   // useEffect(() => {
   //   const handleOpenURL = (event) => {
   //   console.log('Received URL:', event.url);
@@ -33,7 +33,6 @@ export const Home = props => {
   //     Linking.removeEventListener('url', handleOpenURL);
   //   };
   // }, []);
-
 
   return (
     <SafeAreaView>
@@ -73,19 +72,18 @@ export const Home = props => {
         </TouchableOpacity>
 
         <TouchableOpacity
-      accessible={true}
-      accessibilityLabel="Connect to Fitbit"
-      accessibilityHint="Initiate Fitbit Authentication"
-      onPress={initiateFitbitAuth} 
-      style={{
-        ...styles.navigationButton,
-        ...styles.navigationButtonFitbit,
-      }}>
-      <Text accessible={false} style={styles.navigationButtonText}>
-        Connect to Fitbit
-      </Text>
-    </TouchableOpacity>
-
+          accessible={true}
+          accessibilityLabel="Connect to Fitbit"
+          accessibilityHint="Initiate Fitbit Authentication"
+          onPress={initiateFitbitAuth}
+          style={{
+            ...styles.navigationButton,
+            ...styles.navigationButtonFitbit,
+          }}>
+          <Text accessible={false} style={styles.navigationButtonText}>
+            Connect to Fitbit
+          </Text>
+        </TouchableOpacity>
       </View>
     </SafeAreaView>
   );
