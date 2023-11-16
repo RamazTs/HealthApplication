@@ -43,6 +43,11 @@ export const Questionnaire = () => {
     nine: 9,
   };
 
+  const VOICE_COMMANDS = {
+    PREVIOUS_QUESTION: 'previous question',
+    CANCEL_QUESTIONNAIRE: 'cancel questionnaire',
+  };
+
   // RECORDING
   // const [isRecording, setIsRecording] = useState(false);
   const [isManualNavigation, setIsManualNavigation] = useState(false);
@@ -90,7 +95,13 @@ export const Questionnaire = () => {
     const milis = new Date().getTime();
     // if (!isRecording) return; // Ignore results if not recording
     // console.log('onSpeechPartialResults: ', e);
+  const result = e.value[0].toLowerCase();
+  if (result.includes(VOICE_COMMANDS.PREVIOUS_QUESTION)) {
+    goToPreviousQuestion();
+  } else if (result.includes(VOICE_COMMANDS.CANCEL_QUESTIONNAIRE)) {
+    cancelQuestionnaire();
 
+  }
     setPartialResults(prevState => {
       // TODO:
       // HACK 3: LOCKING INPUT FROM VOICE IF WE HAVE DUPLICATE RESULTS FIRING. THIS IS CAUSED BY VOICE ENGINE GENERATING CONTEXT AND POTENTIALLY ALTERING THE SENTENCE
