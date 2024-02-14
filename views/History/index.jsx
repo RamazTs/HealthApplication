@@ -124,71 +124,6 @@ export const History = props => {
   );
 };
 
-//   if (histState === HISTORY_STATE.INIT) {
-//     return (
-//       <View style={styles.containerLoading}>
-//         <Text h3 style={{color: '#4388d6', marginBottom: 12}}>
-//           Loading...
-//         </Text>
-//         <LinearProgress
-//           color="primary"
-//           animation={{duration: 700}}
-//           value={loaderState}
-//         />
-//       </View>
-//     );
-//   }
-
-//   if (histState === HISTORY_STATE.LOADED) {
-//     return (
-//       <View style={styles.containerLoaded}>
-//         {history.map((h, i) => {
-//           return (
-//             <Button
-//               key={`${h.externalData.timestampLocale}-${i}`}
-//               buttonStyle={{
-//                 borderBottomColor: '#4388d6',
-//                 borderBottomWidth: 1,
-//                 display: 'flex',
-//                 justifyContent: 'space-between',
-//                 width: '100%',
-//                 height: 50,
-//               }}
-//               containerStyle={{
-//                 width: '95%',
-//               }}
-//               type="clear"
-//               accessibilityLabel={`Record ${i + 1}`}
-//               onPress={() => navigation.push('RecordView', {record: h})}>
-//               <Text style={{fontSize: 18}}>
-//                 {/* <Icon
-//                   name="filetext1"
-//                   size={24}
-//                   accessible={false}
-//                   color={'#4388d6'}
-//                 /> */}
-//                 {'  '}
-//                 Record {i + 1} - {h.externalData.timestampLocale}
-//               </Text>
-//               {/* <Icon
-//                 name="right"
-//                 size={18}
-//                 accessible={false}
-//                 color={'#4388d6'}
-//               /> */}
-//             </Button>
-//           );
-//         })}
-//       </View>
-//     );
-//   }
-
-//   if (histState === HISTORY_STATE.ERROR) {
-//   }
-
-//   return undefined;
-// };
-
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -228,19 +163,3 @@ const styles = StyleSheet.create({
     color: 'grey',
   },
 });
-// const styles = StyleSheet.create({
-//   containerLoading: {
-//     marginVertical: 30,
-//     marginHorizontal: 15,
-//   },
-//   containerLoaded: {
-//     display: 'flex',
-//     flexDirection: 'row',
-//     flexWrap: 'wrap',
-//     alignItems: 'center',
-//     justifyContent: 'center',
-//     width: '100%',
-//     height: '100%',
-//     padding: 5,
-//   },
-// });
