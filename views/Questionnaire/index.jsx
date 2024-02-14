@@ -371,7 +371,7 @@ export const Questionnaire = () => {
     // TODO: ADD LOADING
     const history = await AsyncStorage.getItem('history');
     const newHistory = history ? JSON.parse(history) : [];
-    if (newHistory.length >= 3) {
+    if (newHistory.length >= 50) {
       Alert.alert(
         'File Limit Reached',
         'You have reached the limit of stored records. If you save this data, the oldest record will be deleted.',
