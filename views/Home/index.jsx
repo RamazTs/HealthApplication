@@ -11,6 +11,7 @@ import {
   handleOpenURL,
 } from '../../components/Fitbit/index.js';
 import React, {useEffect} from 'react';
+import { connectToIOSWatch } from '../../components/iOSWatch/index.js'
 
 // import AntIcon from 'react-native-vector-icons/AntDesign';
 // import MaterialIcon from 'react-native-vector-icons/MaterialIcons';
@@ -84,12 +85,14 @@ export const Home = props => {
             Connect to Fitbit
           </Text>
         </TouchableOpacity>
-
-        <TouchableOpacity>
+        <TouchableOpacity
+          accessible={true}
+          accessibilityLabel="Connect to iOS Watch"
+          accessibilityHint="Initiate iOS Watch Connection"
           onPress={connectToIOSWatch}
-          style={styles.navigationButton}>
+          style={[styles.navigationButton, styles.navigationButtoniOSWatch]}>
           <Text style={styles.navigationButtonText}>
-            Connect to iOS Watch
+             Connect to iOS Watch
           </Text>
         </TouchableOpacity>
       </View>
@@ -144,6 +147,9 @@ const styles = StyleSheet.create({
     backgroundColor: '#4388d6',
   },
   navigationButtonFitbit: {
+    backgroundColor: '#4388d6',
+  },
+  navigationButtoniOSWatch: {
     backgroundColor: '#4388d6',
   },
 });
