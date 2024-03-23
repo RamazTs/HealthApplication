@@ -81,7 +81,15 @@ export const Home = props => {
             ...styles.navigationButtonFitbit,
           }}>
           <Text accessible={false} style={styles.navigationButtonText}>
-            Connect to Wearables
+            Connect to Fitbit
+          </Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity>
+          onPress={connectToIOSWatch}
+          style={styles.navigationButton}>
+          <Text style={styles.navigationButtonText}>
+            Connect to iOS Watch
           </Text>
         </TouchableOpacity>
       </View>
