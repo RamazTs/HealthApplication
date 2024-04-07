@@ -90,8 +90,8 @@ export const Home = props => {
           accessibilityLabel="Connect to iOS Watch"
           accessibilityHint="Initiate iOS Watch Connection"
           onPress={connectToIOSWatch}
-          style={[styles.navigationButton, styles.navigationButtoniOSWatch]}>
-          <Text style={styles.navigationButtonText}>
+          style={{...styles.navigationButton, ...styles.navigationButtoniOSWatch}}>
+          <Text accessible={false} style={styles.navigationButtonText}>
              Connect to iOS Watch
           </Text>
         </TouchableOpacity>
@@ -120,7 +120,6 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     width: '100%',
-    marginTop: 100,
     marginBottom: 60,
   },
 
