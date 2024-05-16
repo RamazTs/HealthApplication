@@ -44,6 +44,14 @@
 			</dict>
 		</dict>
 	</dict>
+	<key>NSBluetoothAlwaysUsageDescription</key>
+	<string>We use Bluetooth to connect to devices</string>
+	<key>NSBluetoothPeripheralUsageDescription</key>
+	<string>We use Bluetooth to connect to devices</string>
+	<key>NSLocationAlwaysUsageDescription</key>
+	<string>We use your location to find nearby devices</string>
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>We use your location to find nearby devices</string>
 	<key>NSHealthClinicalHealthRecordsShareUsageDescription</key>
 	<string>Read and understand clinical health data.</string>
 	<key>NSHealthShareUsageDescription</key>

@@ -1,15 +1,15 @@
-import {useEffect, useState} from 'react';
+import { useEffect, useState } from 'react';
 import Voice from '@react-native-voice/voice';
 import TTS from 'react-native-tts';
 import Geolocation from '@react-native-community/geolocation';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import {Alert, Platform} from 'react-native';
-import {View, StyleSheet, ScrollView} from 'react-native';
-import {Button, Divider, Text, LinearProgress} from '@rneui/themed';
+import { Alert, Platform } from 'react-native';
+import { View, StyleSheet, ScrollView } from 'react-native';
+import { Button, Divider, Text, LinearProgress } from '@rneui/themed';
 import QuestionService from '../../services/QuestionService';
-// import Icon from 'react-native-vector-icons/AntDesign';
+import {Temperature} from '../../components/Temperature'; 
 
-export const Questionnaire = () => {
+const Questionnaire = () => {
   const questionService = new QuestionService();
   const TIME_FOR_LOCK = 1500;
 
@@ -468,9 +468,11 @@ export const Questionnaire = () => {
     }
 
     if (qStatus.state == QUESTIONNAIRE_STATES.LOADING) {
+      console.log('Transitioning to TEMPSCAN state');
       getExternalInformation().then(information => {
         const [location, weather] = information;
         const timestamp = new Date();
+        console.log('Setting TEMPSCAN state with external data');
         setQStatus(q => ({
           ...q,
           externalData: {
@@ -682,29 +684,11 @@ export const Questionnaire = () => {
   }
 
   if (qStatus.state == QUESTIONNAIRE_STATES.TEMPSCAN) {
-    return (
-      <View style={styles.containerTempScan}>
-        <Text h3 style={{ color: '#4388d6', marginBottom: 12 }}>Temperature Scan</Text>
-        <Text style={{ fontSize: 20, marginBottom: 20 }}>
-          Please measure your temperature and press "Continue" to proceed.
-        </Text>
-        <Button
-          title="Continue"
-          buttonStyle={{
-            borderWidth: 2,
-            borderColor: '#4388d6',
-            borderRadius: 10,
-          }}
-          titleStyle={{
-            color: 'white',
-            fontSize: 25,
-            width: 120,
-            fontWeight: 'bold',
-          }}
-          onPress={() => setQStatus(q => ({ ...q, state: QUESTIONNAIRE_STATES.FINISHED }))}
-        />
-      </View>
-    );
+    console.log('Navigating to Temperature screen');
+    return <Temperature onContinue={() => {
+      console.log('Continue button pressed');
+      setQStatus(q => ({ ...q, state: QUESTIONNAIRE_STATES.FINISHED }));
+    }} />;
   }
 
   if (qStatus.state == QUESTIONNAIRE_STATES.FINISHED) {
@@ -864,12 +848,6 @@ const styles = StyleSheet.create({
     justifyContent: 'space-around',
     margin: 10,
   },
-  containerTempScan: {
-    display: 'flex',
-    flexDirection: 'column',
-    justifyContent: 'center',
-    alignItems: 'center',
-    width: '100%',
-    height: '100%',
-  },
 });
+
+export default Questionnaire;
