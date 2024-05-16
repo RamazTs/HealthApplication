@@ -14,7 +14,7 @@
     "@react-native-async-storage/async-storage": "^1.19.3",
     "@react-native-community/geolocation": "^3.1.0",
     "@react-native-masked-view/masked-view": "^0.2.9",
-    "@react-native-voice/voice": "^3.2.4",
+    "@react-native-voice/voice": "^3.1.5",
     "@react-navigation/native": "^6.1.7",
     "@react-navigation/stack": "^6.3.17",
     "@rneui/base": "^4.0.0-rc.7",

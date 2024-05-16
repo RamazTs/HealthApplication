@@ -20,6 +20,7 @@ export const Questionnaire = () => {
     FINISHED: 'FINISHED',
     SAVING: 'SAVING',
     SAVED: 'SAVED',
+    TEMPSCAN: 'TEMPSCAN',
   };
 
   const TTS_STATES = {
@@ -478,7 +479,7 @@ export const Questionnaire = () => {
             weather: weather,
             location: location,
           },
-          state: QUESTIONNAIRE_STATES.FINISHED,
+          state: QUESTIONNAIRE_STATES.TEMPSCAN,
         }));
       });
     }
@@ -680,6 +681,32 @@ export const Questionnaire = () => {
     );
   }
 
+  if (qStatus.state == QUESTIONNAIRE_STATES.TEMPSCAN) {
+    return (
+      <View style={styles.containerTempScan}>
+        <Text h3 style={{ color: '#4388d6', marginBottom: 12 }}>Temperature Scan</Text>
+        <Text style={{ fontSize: 20, marginBottom: 20 }}>
+          Please measure your temperature and press "Continue" to proceed.
+        </Text>
+        <Button
+          title="Continue"
+          buttonStyle={{
+            borderWidth: 2,
+            borderColor: '#4388d6',
+            borderRadius: 10,
+          }}
+          titleStyle={{
+            color: 'white',
+            fontSize: 25,
+            width: 120,
+            fontWeight: 'bold',
+          }}
+          onPress={() => setQStatus(q => ({ ...q, state: QUESTIONNAIRE_STATES.FINISHED }))}
+        />
+      </View>
+    );
+  }
+
   if (qStatus.state == QUESTIONNAIRE_STATES.FINISHED) {
     return (
       <ScrollView>
@@ -836,5 +863,13 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-around',
     margin: 10,
+  },
+  containerTempScan: {
+    display: 'flex',
+    flexDirection: 'column',
+    justifyContent: 'center',
+    alignItems: 'center',
+    width: '100%',
+    height: '100%',
   },
 });
