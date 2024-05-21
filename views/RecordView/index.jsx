@@ -71,6 +71,24 @@ export const RecordView = props => {
             </View>
           );
         })}
+        {record.scans && record.scans.length > 0 && (
+          <View style={styles.scans}>
+            <Text h3 style={{ color: '#4388d6', marginBottom: 12 }}>
+              Saved Scans
+            </Text>
+            {record.scans.map((scan, scanIdx) => (
+              <View key={scanIdx} style={{ marginBottom: 15 }}>
+                <Text style={{ fontSize: 20, color: '#4388d6' }}>
+                  Description: <Text style={{ fontSize: 15 }}>{scan.description}</Text>
+                </Text>
+                <Text style={{ fontSize: 20, color: '#4388d6' }}>
+                  Timestamp: <Text style={{ fontSize: 15 }}>{new Date(scan.timestamp).toLocaleString()}</Text>
+                </Text>
+                <Divider inset={true} insetType="middle" style={{ marginBottom: 15 }} />
+              </View>
+            ))}
+          </View>
+        )}
       </View>
     </ScrollView>
   );

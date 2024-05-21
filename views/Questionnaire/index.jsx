@@ -7,7 +7,7 @@ import { Alert, Platform } from 'react-native';
 import { View, StyleSheet, ScrollView } from 'react-native';
 import { Button, Divider, Text, LinearProgress } from '@rneui/themed';
 import QuestionService from '../../services/QuestionService';
-import {Temperature} from '../../components/Temperature'; 
+import { Temperature } from '../../components/Temperature'; 
 
 const Questionnaire = () => {
   const questionService = new QuestionService();
@@ -70,6 +70,9 @@ const Questionnaire = () => {
     externalData: {},
     lastAnswerSet: 0,
   });
+
+  // Store scans data
+  const [scans, setScans] = useState([]);
 
   const stopRecording = () => {
     return Voice.stop();
@@ -372,6 +375,11 @@ const Questionnaire = () => {
     // TODO: ADD LOADING
     const history = await AsyncStorage.getItem('history');
     const newHistory = history ? JSON.parse(history) : [];
+    const newRecord = {
+      answeredQuestions: qStatus.answeredQuestions,
+      externalData: qStatus.externalData,
+      scans: scans, // add scans to the saved data
+    };
     if (newHistory.length >= 50) {
       Alert.alert(
         'File Limit Reached',
@@ -382,10 +390,7 @@ const Questionnaire = () => {
             onPress: async () => {
               setQStatus(q => ({...q, state: QUESTIONNAIRE_STATES.SAVING}));
               newHistory.shift(); // Remove the oldest questionnaire from the start
-              newHistory.push({
-                answeredQuestions: qStatus.answeredQuestions,
-                externalData: qStatus.externalData,
-              });
+              newHistory.push(newRecord);
               await AsyncStorage.setItem('history', JSON.stringify(newHistory));
               setQStatus(q => ({...q, state: QUESTIONNAIRE_STATES.SAVED}));
             },
@@ -398,15 +403,13 @@ const Questionnaire = () => {
       );
     } else {
       setQStatus(q => ({...q, state: QUESTIONNAIRE_STATES.SAVING}));
-      newHistory.push({
-        answeredQuestions: qStatus.answeredQuestions,
-        externalData: qStatus.externalData,
-      });
+      newHistory.push(newRecord);
       await AsyncStorage.setItem('history', JSON.stringify(newHistory));
       // TODO: NOTIFY SAVED
       setQStatus(q => ({...q, state: QUESTIONNAIRE_STATES.SAVED}));
     }
   };
+  
 
   // CHECK CHAGES ON SAVED ANSWERED QUESTIONS
   useEffect(() => {
@@ -684,9 +687,8 @@ const Questionnaire = () => {
   }
 
   if (qStatus.state == QUESTIONNAIRE_STATES.TEMPSCAN) {
-    console.log('Navigating to Temperature screen');
-    return <Temperature onContinue={() => {
-      console.log('Continue button pressed');
+    return <Temperature onContinue={savedScans => {
+      setScans(savedScans);
       setQStatus(q => ({ ...q, state: QUESTIONNAIRE_STATES.FINISHED }));
     }} />;
   }
@@ -759,6 +761,24 @@ const Questionnaire = () => {
               </View>
             );
           })}
+
+          {/* Display saved scans */}
+          <View style={{marginTop: 20}}>
+            <Text h3 style={{color: '#4388d6', marginBottom: 12}}>
+              Saved Scans
+            </Text>
+            {scans.map(scan => (
+              <View key={scan.key} style={{marginBottom: 15}}>
+                <Text style={{fontSize: 20, color: '#4388d6'}}>
+                  Description: <Text style={{fontSize: 15}}>{scan.description}</Text>
+                </Text>
+                <Text style={{fontSize: 20, color: '#4388d6'}}>
+                  Timestamp: <Text style={{fontSize: 15}}>{new Date(scan.timestamp).toLocaleString()}</Text>
+                </Text>
+                <Divider inset={true} insetType="middle" style={{marginBottom: 15}} />
+              </View>
+            ))}
+          </View>
 
           <View style={styles.constinerResultsButtons}>
             <Button

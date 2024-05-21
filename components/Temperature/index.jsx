@@ -8,8 +8,8 @@ import { NativeEventEmitter, NativeModules } from 'react-native';
 import { Buffer } from 'buffer';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Svg, Rect } from 'react-native-svg';
-import Voice from '@react-native-voice/voice';
-import TTS from 'react-native-tts';
+// import Voice from '@react-native-voice/voice';
+// import TTS from 'react-native-tts';
 
 const { width: windowWidth, height: windowHeight } = Dimensions.get('window');
 
@@ -18,7 +18,6 @@ export const Temperature = ({ onContinue }) => {
   const [devices, setDevices] = useState([]);
   const [modalVisible, setModalVisible] = useState(false);
   const [descriptionModalVisible, setDescriptionModalVisible] = useState(false);
-  const [historyModalVisible, setHistoryModalVisible] = useState(false);
   const [displayData, setDisplayData] = useState([]);
   const [tempDataForSave, setTempDataForSave] = useState([]);
   const [buffer, setBuffer] = useState([]);
@@ -30,6 +29,9 @@ export const Temperature = ({ onContinue }) => {
   const [detailModalVisible, setDetailModalVisible] = useState(false);
   const [selectedItem, setSelectedItem] = useState(null);
   const [isListening, setIsListening] = useState(false);
+
+  // let commandTimeout;
+  // let commandExecuted = false;
 
   useEffect(() => {
     console.log('Initializing BleManager');
@@ -47,15 +49,7 @@ export const Temperature = ({ onContinue }) => {
         const storedPeripheralId = await AsyncStorage.getItem('connectedPeripheralId');
         if (storedPeripheralId) {
           console.log('Trying to reconnect to ' + storedPeripheralId);
-          BleManager.isPeripheralConnected(storedPeripheralId, []).then((isConnected) => {
-            if (isConnected) {
-              console.log('Device is already connected.');
-              setConnectedPeripheralId(storedPeripheralId);
-            } else {
-              console.log('Stored device not connected, attempting to reconnect');
-              connectToDevice({ id: storedPeripheralId });
-            }
-          });
+          reconnectDeviceWithRetry(storedPeripheralId, 3000);
         } else {
           console.log('No stored device ID found');
         }
@@ -72,12 +66,6 @@ export const Temperature = ({ onContinue }) => {
     };
   }, []);
 
-  useEffect(() => {
-    if (historyModalVisible) {
-      loadScans();
-    }
-  }, [historyModalVisible]);
-
   const startScan = () => {
     setIsScanning(true);
     setModalVisible(true);
@@ -90,30 +78,48 @@ export const Temperature = ({ onContinue }) => {
     });
   };
 
-  useEffect(() => {
-    const onSpeechResults = (e) => {
-      const speechText = e.value[0].toLowerCase();
-      console.log('Recognized:', speechText);
-      if (speechText.includes("save scan")) {
-        setDescriptionModalVisible(true);
-        setIsListening(false); // Stop listening when command is recognized
-      }
-    };
+  // useEffect(() => {
+  //   const onSpeechResults = (e) => {
+  //     const speechText = e.value[0].toLowerCase();
+  //     console.log('Recognized:', speechText);
 
-    const onSpeechError = (e) => {
-      console.error('onSpeechError: ', e.error);
-    };
+  //     if (commandExecuted) return; // Prevent executing commands multiple times
+  //     commandExecuted = true;
 
-    Voice.onSpeechResults = onSpeechResults;
-    Voice.onSpeechError = onSpeechError;
+  //     if (speechText.includes("scan") || speechText.includes("skin")) {
+  //       toggleMeasurement();
+  //     } else if (speechText.includes("save") || speechText.includes("safe")) {
+  //       saveScan();
+  //     } else if (speechText.includes("continue")) {
+  //       handleContinue();
+  //     }
 
-    // Start listening when component mounts
-    startListening();
+  //     clearTimeout(commandTimeout); // Clear previous timeout
+  //     commandTimeout = setTimeout(() => {
+  //       console.log('Resetting command stack');
+  //       commandExecuted = false; // Reset command executed flag
+  //       Voice.stop(); // Stop listening after 3 seconds
+  //       startListening(); // Restart listening
+  //     }, 3000);
+  //   };
 
-    return () => {
-      Voice.destroy().then(Voice.removeAllListeners);
-    };
-  }, []);
+  //   const onSpeechError = (e) => {
+  //     console.error('onSpeechError: ', e.error);
+  //     Voice.stop();
+  //     startListening();
+  //   };
+
+  //   Voice.onSpeechResults = onSpeechResults;
+  //   Voice.onSpeechError = onSpeechError;
+
+  //   // Start listening when component mounts
+  //   startListening();
+
+  //   return () => {
+  //     Voice.destroy().then(Voice.removeAllListeners);
+  //     clearTimeout(commandTimeout);
+  //   };
+  // }, []);
 
   const startListening = async () => {
     if (!isListening) {
@@ -149,6 +155,29 @@ export const Temperature = ({ onContinue }) => {
     }
   };
 
+  const reconnectDeviceWithRetry = async (peripheralId, timeout) => {
+    const startTime = Date.now();
+    while (Date.now() - startTime < timeout) {
+      try {
+        await BleManager.connect(peripheralId);
+        console.log('Connected to ' + peripheralId);
+        setConnectedPeripheralId(peripheralId);
+        await AsyncStorage.setItem('connectedPeripheralId', peripheralId); // Save the device ID
+        const peripheralInfo = await BleManager.retrieveServices(peripheralId);
+        console.log('Retrieved services and characteristics', peripheralInfo);
+        const serviceUUID = '12345678-1234-1234-1234-123456789012'.toLowerCase();
+        const characteristicUUID = 'abcd1234-1234-1234-1234-123456789012'.toLowerCase();
+        await BleManager.startNotification(peripheralId, serviceUUID, characteristicUUID);
+        console.log('Started notification for temperature');
+        return; // Exit the function if connection is successful
+      } catch (error) {
+        console.error('Connection attempt failed, retrying...', error);
+        await new Promise(resolve => setTimeout(resolve, 1000)); // Wait 1 second before retrying
+      }
+    }
+    alert('Failed to reconnect. Please check the device and try again.');
+  };
+
   const connectToDevice = (peripheral) => {
     console.log('Checking connection status for:', peripheral.id);
 
@@ -173,7 +202,7 @@ export const Temperature = ({ onContinue }) => {
       .then(() => {
         console.log('Connected to ' + peripheral.id);
         setConnectedPeripheralId(peripheral.id); // Update state here after a successful connection
-        AsyncStorage.setItem('connectedPeripheralId', peripheral.id); // Speichere die Geräte-ID
+        AsyncStorage.setItem('connectedPeripheralId', peripheral.id); // Save the device ID
         setModalVisible(false);
         return BleManager.retrieveServices(peripheral.id);
       })
@@ -218,7 +247,7 @@ export const Temperature = ({ onContinue }) => {
     console.log('Disconnected from ' + data.peripheral);
     if (data.peripheral === connectedPeripheralId) {
       console.log('Attempting to reconnect...');
-      connectToDevice({ id: data.peripheral });
+      reconnectDeviceWithRetry(data.peripheral, 3000);
     }
   };
 
@@ -227,6 +256,10 @@ export const Temperature = ({ onContinue }) => {
       sendControlCommand('STOP');
       setIsMeasuring(false);
     } else {
+      if (!connectedPeripheralId) {
+        alert('No device is connected. Please connect to a device first.');
+        return;
+      }
       sendControlCommand('START');
       setIsMeasuring(true);
     }
@@ -294,6 +327,7 @@ export const Temperature = ({ onContinue }) => {
   };
 
   const saveScan = () => {
+    console.log('Executing saveScan function');
     setCountdown(3);
     const interval = setInterval(() => {
       setCountdown(prevCount => {
@@ -316,6 +350,7 @@ export const Temperature = ({ onContinue }) => {
     const key = `scan-${timestamp}`;
     AsyncStorage.setItem(key, JSON.stringify(dataToSave)).then(() => {
       console.log('Scan and description saved:', dataToSave);
+      setScans(prevScans => [...prevScans, { ...dataToSave, key }]); // Update state with new scan
       setDescription('');
       setDescriptionModalVisible(false);
     }).catch(error => {
@@ -323,55 +358,11 @@ export const Temperature = ({ onContinue }) => {
     });
   };
 
-  const loadScans = async () => {
-    try {
-      const keys = await AsyncStorage.getAllKeys();
-      const scanKeys = keys.filter(key => key.startsWith('scan-'));
-      const result = await AsyncStorage.multiGet(scanKeys);
-      let loadedScans = result.map(item => ({ key: item[0], ...JSON.parse(item[1]) }));
-      loadedScans.sort((a, b) => {
-        return new Date(b.timestamp) - new Date(a.timestamp);
-      });
-
-      setScans(loadedScans);
-    } catch (error) {
-      console.error('Fehler beim Laden der Scans:', error);
-      setScans([]);
+  const handleContinue = () => {
+    if (isMeasuring) {
+      toggleMeasurement(); 
     }
-  };
-
-  const navigateToHistory = () => {
-    setHistoryModalVisible(true);
-  };
-
-  const handlePress = (item) => {
-    const options = ['Daten anzeigen', 'Scan löschen', 'Abbrechen'];
-    Alert.alert(
-      'Wähle eine Aktion',
-      'Was möchtest du mit diesem Scan tun?',
-      options.map((option, index) => ({
-        text: option,
-        onPress: () => {
-          if (option === 'Daten anzeigen') {
-            showData(item);
-          } else if (option === 'Scan löschen') {
-            deleteScan(item.key);
-          }
-        },
-        style: option === 'Abbrechen' ? 'cancel' : 'default',
-      })),
-    );
-  };
-
-  const showData = (item) => {
-    console.log("Anzeigen der Daten für: ", item);
-    setSelectedItem(item);
-    setDetailModalVisible(true);
-  };
-
-  const deleteScan = async (key) => {
-    await AsyncStorage.removeItem(key);
-    setScans(scans.filter(scan => scan.key !== key));
+    onContinue(scans);
   };
 
   return (
@@ -406,13 +397,9 @@ export const Temperature = ({ onContinue }) => {
         <TouchableOpacity onPress={saveScan} style={styles.savingButtons}>
           <Text style={styles.buttonText}>{"Save Scan"}</Text>
         </TouchableOpacity>
-        <TouchableOpacity onPress={navigateToHistory} style={styles.savingButtons}>
-          <Text style={styles.buttonText}>{"History"}</Text>
+        <TouchableOpacity onPress={handleContinue} style={styles.savingButtons}>
+          <Text style={styles.buttonText}>{"Continue"}</Text>
         </TouchableOpacity>
-        <Button title="Continue" onPress={() => {
-          console.log('Continue button pressed');
-          onContinue();
-        }} />
       </View>
       <Modal
         animationType="slide"
@@ -439,7 +426,7 @@ export const Temperature = ({ onContinue }) => {
         visible={descriptionModalVisible}
         onRequestClose={() => {
           setDescriptionModalVisible(false);
-          startListening(); // Restart listening if modal is dismissed
+          // startListening(); // Restart listening if modal is dismissed
         }}
       >
         <View style={styles.modalView}>
@@ -451,28 +438,6 @@ export const Temperature = ({ onContinue }) => {
             placeholder="Add a description"
           />
           <Button title="Save Description and Data" onPress={saveDescriptionAndData} />
-        </View>
-      </Modal>
-      <Modal
-        animationType="slide"
-        transparent={true}
-        visible={historyModalVisible}
-        onRequestClose={() => setHistoryModalVisible(false)}
-      >
-        <View style={styles.modalView}>
-          <FlatList
-            data={scans}
-            keyExtractor={item => item.key}
-            renderItem={({ item }) => (
-              <TouchableOpacity onPress={() => handlePress(item)}>
-                <View style={styles.listItem}>
-                  <Text style={styles.dateText}>{new Date(item.timestamp).toLocaleString()}</Text>
-                  <Text style={styles.descriptionText}>{item.description}</Text>
-                </View>
-              </TouchableOpacity>
-            )}
-          />
-          <Button title="Close" onPress={() => setHistoryModalVisible(false)} />
         </View>
       </Modal>
       <Modal
@@ -609,4 +574,3 @@ const styles = StyleSheet.create({
     borderRadius: 10,
   },
 });
-
