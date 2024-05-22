@@ -7,7 +7,8 @@ import { Alert, Platform } from 'react-native';
 import { View, StyleSheet, ScrollView } from 'react-native';
 import { Button, Divider, Text, LinearProgress } from '@rneui/themed';
 import QuestionService from '../../services/QuestionService';
-import { Temperature } from '../../components/Temperature'; 
+import { Temperature } from '../../components/Temperature'; 0
+import BleManager from 'react-native-ble-manager';
 
 const Questionnaire = () => {
   const questionService = new QuestionService();

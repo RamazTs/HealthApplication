@@ -5,19 +5,51 @@ import {
   TouchableOpacity,
   Text,
   Linking,
+  Alert
 } from 'react-native';
 import {
   initiateFitbitAuth,
   handleOpenURL,
 } from '../../components/Fitbit/index.js';
 import React, {useEffect} from 'react';
-import { connectToIOSWatch } from '../../components/iOSWatch/index.js'
+import { connectToIOSWatch } from '../../components/iOSWatch/index.js';
 
 // import AntIcon from 'react-native-vector-icons/AntDesign';
 // import MaterialIcon from 'react-native-vector-icons/MaterialIcons';
 
-export const Home = props => {
-  const {navigation} = props;
+import { useNavigation } from '@react-navigation/native';
+import BleManager from 'react-native-ble-manager';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+
+export const Home = () => {
+  const navigation = useNavigation();
+
+  useEffect(() => {
+    Linking.addEventListener('url', handleOpenURL);
+
+    const tryReconnect = async () => {
+      try {
+        const storedPeripheralId = await AsyncStorage.getItem('connectedPeripheralId');
+        if (storedPeripheralId) {
+          BleManager.connect(storedPeripheralId)
+            .then(() => {
+              console.log('Reconnected to ' + storedPeripheralId);
+            })
+            .catch(error => {
+              // console.error('Connection attempt failed', error);
+            });
+        }
+      } catch (error) {
+        console.error('Error in tryReconnect:', error);
+      }
+    };
+
+    tryReconnect();
+
+    return () => {
+      Linking.removeEventListener('url', handleOpenURL);
+    };
+  }, []);
   const navigate = location => {
     navigation.push(location);
   };
@@ -25,15 +57,6 @@ export const Home = props => {
   useEffect(() => {
     Linking.addEventListener('url', handleOpenURL);
   }, []);
-  // useEffect(() => {
-  //   const handleOpenURL = (event) => {
-  //   console.log('Received URL:', event.url);
-  //   };
-  //   Linking.addEventListener('url', handleOpenURL);
-  //   return () => {
-  //     Linking.removeEventListener('url', handleOpenURL);
-  //   };
-  // }, []);
 
   return (
     <SafeAreaView>
@@ -95,6 +118,19 @@ export const Home = props => {
              Connect to iOS Watch
           </Text>
         </TouchableOpacity>
+        <TouchableOpacity
+          accessible={true}
+          accessibilityLabel="Connect to Bluetooth"
+          accessibilityHint="Manage Bluetooth Connection"
+          onPress={() => navigate('BluetoothConnect')}
+          style={{
+            ...styles.navigationButton,
+            ...styles.navigationButtonBluetooth,
+          }}>
+          <Text accessible={false} style={styles.navigationButtonText}>
+             Connect to Bluetooth
+          </Text>
+        </TouchableOpacity>
       </View>
     </SafeAreaView>
   );
@@ -149,6 +185,9 @@ const styles = StyleSheet.create({
     backgroundColor: '#4388d6',
   },
   navigationButtoniOSWatch: {
+    backgroundColor: '#4388d6',
+  },
+  navigationButtonBluetooth: {
     backgroundColor: '#4388d6',
   },
 });
