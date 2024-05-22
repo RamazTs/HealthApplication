@@ -85,42 +85,45 @@ const [modalVisible, setModalVisible] = useState(false);
             ...styles.navigationButtonFitbit,
           }}>
             <Modal
-              animationType="slide"
+              animationType="fade"
               transparent ={true}
               visible={modalVisible}
-              onRequestClose={() => setModalVisible(false)}
-              style={{}}
-            >
-            <TouchableOpacity
-              accessible={true}
-              accessibilityLabel="Connect to Fitbit"
-              accessibilityHint="Initiate Fitbit Authentication"
-              onPress={initiateFitbitAuth}
-              onPressOut={() => setModalVisible(false)}
-              style={{
-                ...styles.navigationButton,
-                ...styles.navigationButtonFitbit,
-              }}>
-                <Text accessible={false} style={styles.navigationButtonText}>
-                  Connect to Fitbit
-                </Text>
-             </TouchableOpacity>
-             <TouchableOpacity
-              accessible={true}
-              accessibilityLabel="Connect to iOS Watch"
-              accessibilityHint="Initiate iOS Watch Connection"
-              onPress={connectToIOSWatch}
-              onPressOut={() => setModalVisible(false)}
-              style={{...styles.navigationButton, ...styles.navigationButtoniOSWatch}}>
+              onRequestClose={() => setModalVisible(false)}>
+              <View style={styles.modalContianer}>
+                <TouchableOpacity
+                  accessible={true}
+                  accessibilityLabel="Connect to Fitbit"
+                  accessibilityHint="Initiate Fitbit Authentication"
+                  onPress={initiateFitbitAuth}
+                  onPressOut={() => setModalVisible(false)}
+                  style={{
+                    ...styles.navigationButton,
+                    ...styles.navigationButtonFitbit,
+                  }}>
+                    <Text accessible={false} style={styles.navigationButtonText}>
+                      Connect to Fitbit
+                    </Text>
+                </TouchableOpacity>
+                <TouchableOpacity
+                  accessible={true}
+                  accessibilityLabel="Connect to iOS Watch"
+                  accessibilityHint="Initiate iOS Watch Connection"
+                  onPress={connectToIOSWatch}
+                  onPressOut={() => setModalVisible(false)}
+                  style={{
+                    ...styles.navigationButton,
+                   ...styles.navigationButtoniOSWatch
+                   }}>
+                  <Text accessible={false} style={styles.navigationButtonText}>
+                    Connect to iOS Watch
+                  </Text>
+                </TouchableOpacity>
+                </View>
+                </Modal>
               <Text accessible={false} style={styles.navigationButtonText}>
-                Connect to iOS Watch
+                Connect to Fitness Wearable
               </Text>
             </TouchableOpacity>
-            </Modal>
-          <Text accessible={false} style={styles.navigationButtonText}>
-            Connect to Fitness Wearable
-          </Text>
-        </TouchableOpacity>
       </View>
     </SafeAreaView>
   );
@@ -177,4 +180,25 @@ const styles = StyleSheet.create({
   navigationButtoniOSWatch: {
     backgroundColor: '#4388d6',
   },
+  modalContianer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'rgba(0,0,0,.75)',
+  },
+  modalView: {
+    backgroundColor: 'white',
+    borderRadius: 10,
+    padding: 20,
+    alignItems: 'center',
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+    elevation: 5,
+  },
+
 });
