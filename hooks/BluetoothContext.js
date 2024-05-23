@@ -9,6 +9,8 @@ const BluetoothContext = createContext();
 export const BluetoothProvider = ({ children }) => {
   const [connectedPeripheralId, setConnectedPeripheralId] = useState(null);
   const [isMeasuring, setIsMeasuring] = useState(false);
+  const [isScanning, setIsScanning] = useState(false);
+  const [devices, setDevices] = useState([]);
 
   useEffect(() => {
     console.log('Initializing BleManager');
@@ -45,7 +47,15 @@ export const BluetoothProvider = ({ children }) => {
   }, []);
 
   const handleDiscoverPeripheral = (peripheral) => {
-    // Handle discovered peripheral
+    if (peripheral.name) {
+      setDevices(currentDevices => {
+        if (currentDevices.some(device => device.id === peripheral.id)) {
+          return currentDevices;
+        } else {
+          return [...currentDevices, peripheral];
+        }
+      });
+    }
   };
 
   const handleDisconnectedPeripheral = (data) => {
@@ -58,9 +68,6 @@ export const BluetoothProvider = ({ children }) => {
 
   const handleUpdateValueForCharacteristic = (data) => {
     console.log('handleUpdateValueForCharacteristic called');
-    if (Buffer === undefined) {
-      console.error('Buffer is undefined');
-    }
     const receivedData = Buffer.from(data.value).toString();
     console.log('Received data: ', receivedData);
     // Handle received data
@@ -153,14 +160,64 @@ export const BluetoothProvider = ({ children }) => {
     }
   };
 
+  const startScan = () => {
+    setIsScanning(true);
+    BleManager.scan([], 5, true).then(() => {
+      console.log('Scanning...');
+      setIsScanning(false);
+    }).catch(error => {
+      console.error('Error during scan:', error);
+      setIsScanning(false);
+    });
+  };
+
+  const connectToDevice = async (peripheral) => {
+    try {
+      console.log('Checking connection status for:', peripheral.id);
+      const isConnected = await BleManager.isPeripheralConnected(peripheral.id, []);
+      if (isConnected) {
+        console.log('Device already connected:', peripheral.id);
+        setConnectedPeripheralId(peripheral.id);
+      } else {
+        await BleManager.connect(peripheral.id);
+        console.log('Connected to ' + peripheral.id);
+        setConnectedPeripheralId(peripheral.id);
+        await AsyncStorage.setItem('connectedPeripheralId', peripheral.id);
+        await retrieveServices(peripheral.id);
+      }
+    } catch (error) {
+      console.error('Error connecting to device:', error);
+      throw error; // Propagate the error to be handled by the caller
+    }
+  };
+
+  const disconnectDevice = async () => {
+    if (connectedPeripheralId) {
+      try {
+        await BleManager.disconnect(connectedPeripheralId);
+        console.log('Disconnected from ' + connectedPeripheralId);
+        await AsyncStorage.removeItem('connectedPeripheralId');
+        setConnectedPeripheralId(null);
+      } catch (error) {
+        console.error('Disconnect failed', error);
+        throw error; // Propagate the error to be handled by the caller
+      }
+    }
+  };
+
   return (
     <BluetoothContext.Provider value={{
       connectedPeripheralId,
       isMeasuring,
+      isScanning,
+      devices,
       toggleMeasurement,
       sendControlCommand,
       startNotification,
       stopNotification,
+      startScan,
+      connectToDevice,
+      disconnectDevice,
     }}>
       {children}
     </BluetoothContext.Provider>

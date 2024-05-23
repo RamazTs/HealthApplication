@@ -13,7 +13,10 @@ const BluetoothConnect = () => {
 
   const handleBluetoothAction = () => {
     if (connectedPeripheralId) {
-      disconnectDevice();
+      disconnectDevice().catch(error => {
+        console.error('Disconnect failed', error);
+        alert('Failed to disconnect. Please try again.');
+      });
     } else {
       setModalVisible(true);
       startScan();
@@ -39,7 +42,10 @@ const BluetoothConnect = () => {
             keyExtractor={item => item.id}
             renderItem={({ item }) => (
               <TouchableOpacity onPress={() => {
-                connectToDevice(item);
+                connectToDevice(item).catch(error => {
+                  console.error('Connection failed', error);
+                  alert('Failed to connect. Please try again.');
+                });
                 setModalVisible(false);
               }}>
                 <Text style={styles.modalText}>{item.name}</Text>
