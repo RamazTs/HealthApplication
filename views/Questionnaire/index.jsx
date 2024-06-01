@@ -7,7 +7,7 @@ import { Alert, Platform } from 'react-native';
 import { View, StyleSheet, ScrollView } from 'react-native';
 import { Button, Divider, Text, LinearProgress } from '@rneui/themed';
 import QuestionService from '../../services/QuestionService';
-import { Temperature } from '../../components/Temperature'; 0
+import { Temperature } from '../../components/Temperature';
 import BleManager from 'react-native-ble-manager';
 
 const Questionnaire = () => {
@@ -48,6 +48,7 @@ const Questionnaire = () => {
   const VOICE_COMMANDS = {
     PREVIOUS_QUESTION: 'previous question',
     CANCEL_QUESTIONNAIRE: 'cancel questionnaire',
+    BEGIN_QUESTIONNAIRE: 'begin',
   };
 
   // RECORDING
@@ -81,6 +82,7 @@ const Questionnaire = () => {
 
   const startRecording = () => {
     // setIsRecording(true);
+    console.log("Start recording called");
     Voice.start('en-US');
     setTimeout(() => {
       stopRecording();
@@ -100,16 +102,20 @@ const Questionnaire = () => {
     const milis = new Date().getTime();
     // if (!isRecording) return; // Ignore results if not recording
     // console.log('onSpeechPartialResults: ', e);
-  const result = e.value[0].toLowerCase();
-  if (result.includes(VOICE_COMMANDS.PREVIOUS_QUESTION)) {
-    goToPreviousQuestion();
-  } else if (result.includes(VOICE_COMMANDS.CANCEL_QUESTIONNAIRE)) {
-    cancelQuestionnaire();
-
-  }
+    const result = e.value[0].toLowerCase();
+    if (result.includes(VOICE_COMMANDS.PREVIOUS_QUESTION)) {
+      stopRecording();
+      goToPreviousQuestion();
+    } else if (result.includes(VOICE_COMMANDS.CANCEL_QUESTIONNAIRE)) {
+      stopRecording();
+      cancelQuestionnaire();
+    } else if (result.includes(VOICE_COMMANDS.BEGIN_QUESTIONNAIRE)) {
+      stopRecording();
+      startQuestionnaire(); // Start the questionnaire if the voice command is recognized
+    }
     setPartialResults(prevState => {
       // TODO:
-      // HACK 3: LOCKING INPUT FROM VOICE IF WE HAVE DUPLICATE RESULTS FIRING. THIS IS CAUSED BY VOICE ENGINE GENERATING CONTEXT AND POTENTIALLY ALTERING THE SENTENCE
+      // HACK 3: LOCKING INPUT FROM VOICE IF WE HAVE DUPLICATE RESULTS FIRING. THIS IS CAUSED BY VOICE ENGINE GENERATING CONTEXT UND POTENTIALLY ALTERING THE SENTENCE
       // SOMETIMES ALTERATIONS IN THE RESULTS DO NOT HAPPEN AND THE SAME RESULT IS FIRED TWICE
       if (
         prevState &&
@@ -144,7 +150,7 @@ const Questionnaire = () => {
         }
       }
       console.log('Setting new value: ', e.value);
-      return {results: e.value, collectedAt: milis};
+      return { results: e.value, collectedAt: milis };
     });
   }
 
@@ -179,6 +185,7 @@ const Questionnaire = () => {
         TTS.addEventListener('tts-start', ttsStartHandler);
         TTS.addEventListener('tts-finish', ttsFinishHandler);
         TTS.addEventListener('tts-cancel', ttsCancelHandler);
+        TTS.setDefaultLanguage('en-US');
       } catch (error) {
         // TODO: HANDLE ERRORS IN TTS INITIALIZATION
         console.log('TTS INITIALIZATION ERROR', error);
@@ -201,6 +208,10 @@ const Questionnaire = () => {
     }
     init();
 
+    setTimeout(() => {
+      startRecording();
+    }, 100);
+
     return () => {
       if (Platform.OS === 'ios') {
         TTS.removeEventListener('tts-start', ttsStartHandler);
@@ -209,7 +220,7 @@ const Questionnaire = () => {
       }
       TTS.stop().catch(error => console.log('TTS STOP FAILED', error));
       Voice.destroy().catch(error =>
-        console.log('DESTORYING VOICE FAILED', error),
+        console.log('DESTROYING VOICE FAILED', error),
       );
     };
   }, []);
@@ -278,11 +289,11 @@ const Questionnaire = () => {
         ...q,
         questionIdx: newIdx,
         answeredQuestions: updatedAnsweredQuestions,
-        state: QUESTIONNAIRE_STATES.STARTED, 
+        state: QUESTIONNAIRE_STATES.STARTED,
       };
     });
   };
-  
+
 
   const nextQuestion = async () => {
     setIsManualNavigation(true);
@@ -295,9 +306,9 @@ const Questionnaire = () => {
     //   await new Promise(resolve => setTimeout(resolve, 5000));
     // }
     if (qStatus.questionIdx + 1 >= questions.length) {
-      return setQStatus(q => ({...q, state: QUESTIONNAIRE_STATES.LOADING}));
+      return setQStatus(q => ({ ...q, state: QUESTIONNAIRE_STATES.LOADING }));
     }
-    setQStatus(q => ({...q, questionIdx: q.questionIdx + 1}));
+    setQStatus(q => ({ ...q, questionIdx: q.questionIdx + 1 }));
   };
 
   const selectAnswer = answer => {
@@ -326,36 +337,87 @@ const Questionnaire = () => {
   }
 
   const startQuestionnaire = () => {
-    return setQStatus(q => ({...q, state: QUESTIONNAIRE_STATES.STARTED}));
+    stopRecording();
+    return setQStatus(q => ({ ...q, state: QUESTIONNAIRE_STATES.STARTED }));
   };
 
-  const restartQuestionnaire = () => {
+  const restartQuestionnaire = async () => {
+    try {
+      await TTS.stop();  // Stop TTS
+    } catch (error) {
+      console.error("Error stopping TTS:", error);
+    }
+
+    try {
+      await Voice.stop();  // Stop Voice recording
+    } catch (error) {
+      console.error("Error stopping Voice recording:", error);
+    }
+
     setQStatus({
-      state: QUESTIONNAIRE_STATES.BEFORE_STARTING,
-      questionIdx: 0,
-      answeredQuestions: [],
-      externalData: {},
+        state: QUESTIONNAIRE_STATES.BEFORE_STARTING,
+        questionIdx: 0,
+        answeredQuestions: [],
+        externalData: {},
     });
+
+    // Neuinitialisierung von TTS und Voice
+    TTS.setDefaultLanguage('en-US');
+    Voice.onSpeechStart = onSpeechStart;
+    Voice.onSpeechEnd = onSpeechEnd;
+
+    if (Platform.OS === 'android')
+      Voice.onSpeechResults = onSpeechPartialResults;
+    else
+      Voice.onSpeechPartialResults = onSpeechPartialResults;
+
+    Voice.onSpeechError = onSpeechError;
+
+    setTimeout(() => {
+      startRecording();
+    }, 100);
   };
 
   const cancelQuestionnaire = async () => {
     try {
-      await TTS.stop();
-      await stopRecording();
+      await TTS.stop();  // Stop TTS
     } catch (error) {
-      console.error("Error cancelling TTS or Voice recording:", error);
+      console.error("Error stopping TTS:", error);
     }
-  
+
+    try {
+      await Voice.stop();  // Stop Voice recording
+    } catch (error) {
+      console.error("Error stopping Voice recording:", error);
+    }
+
     setQStatus({
-      state: QUESTIONNAIRE_STATES.BEFORE_STARTING,
-      questionIdx: 0,
-      answeredQuestions: [],
-      externalData: {},
+        state: QUESTIONNAIRE_STATES.BEFORE_STARTING,
+        questionIdx: 0,
+        answeredQuestions: [],
+        externalData: {},
     });
+
+    // Neuinitialisierung von TTS und Voice
+    TTS.setDefaultLanguage('en-US');
+    Voice.onSpeechStart = onSpeechStart;
+    Voice.onSpeechEnd = onSpeechEnd;
+
+    if (Platform.OS === 'android')
+      Voice.onSpeechResults = onSpeechPartialResults;
+    else
+      Voice.onSpeechPartialResults = onSpeechPartialResults;
+
+    Voice.onSpeechError = onSpeechError;
+
+    setTimeout(() => {
+      startRecording();
+    }, 100);
   };
 
   const readQuestion = async () => {
-    const {question, answers} = questions[qStatus.questionIdx];
+    const { question, answers } = questions[qStatus.questionIdx];
+    // console.log('Reading question:', question);
 
     const text =
       'Question ' + (qStatus.questionIdx + 1) + ', ' + question + '; ';
@@ -363,13 +425,13 @@ const Questionnaire = () => {
     const ans = answers
       .map((ans, index) => {
         if (qStatus.questionIdx == 0) return index + 1 + ', ' + ans;
-        return 'choice ' + (index + 1) + ', ';
+        return 'choice ' + (index + 1) + ', ' + ans;
       })
       .join();
 
-    TTS.getInitStatus().then(() => {
-      TTS.speak(text + ans);
-    });
+      TTS.getInitStatus().then(() => {
+        TTS.speak(text + ans);
+      });
   };
 
   const saveData = async () => {
@@ -389,11 +451,11 @@ const Questionnaire = () => {
           {
             text: 'Ok',
             onPress: async () => {
-              setQStatus(q => ({...q, state: QUESTIONNAIRE_STATES.SAVING}));
+              setQStatus(q => ({ ...q, state: QUESTIONNAIRE_STATES.SAVING }));
               newHistory.shift(); // Remove the oldest questionnaire from the start
               newHistory.push(newRecord);
               await AsyncStorage.setItem('history', JSON.stringify(newHistory));
-              setQStatus(q => ({...q, state: QUESTIONNAIRE_STATES.SAVED}));
+              setQStatus(q => ({ ...q, state: QUESTIONNAIRE_STATES.SAVED }));
             },
           },
           {
@@ -403,21 +465,21 @@ const Questionnaire = () => {
         ],
       );
     } else {
-      setQStatus(q => ({...q, state: QUESTIONNAIRE_STATES.SAVING}));
+      setQStatus(q => ({ ...q, state: QUESTIONNAIRE_STATES.SAVING }));
       newHistory.push(newRecord);
       await AsyncStorage.setItem('history', JSON.stringify(newHistory));
       // TODO: NOTIFY SAVED
-      setQStatus(q => ({...q, state: QUESTIONNAIRE_STATES.SAVED}));
+      setQStatus(q => ({ ...q, state: QUESTIONNAIRE_STATES.SAVED }));
     }
   };
-  
 
-  // CHECK CHAGES ON SAVED ANSWERED QUESTIONS
+
+  // CHECK CHANGES ON SAVED ANSWERED QUESTIONS
   useEffect(() => {
     if (qStatus.state === QUESTIONNAIRE_STATES.BEFORE_STARTING || isManualNavigation) {
-    setIsManualNavigation(false);
-    return;
-  }
+      setIsManualNavigation(false);
+      return;
+    }
     nextQuestion();
   }, [qStatus.answeredQuestions]);
 
@@ -432,7 +494,7 @@ const Questionnaire = () => {
     console.log('FIRED');
     if (qStatus.state === QUESTIONNAIRE_STATES.BEFORE_STARTING) return;
 
-    const {answers} = questions[qStatus.questionIdx];
+    const { answers } = questions[qStatus.questionIdx];
 
     const text = partialResults.results[0];
     if (!text) return;
@@ -477,6 +539,9 @@ const Questionnaire = () => {
         const [location, weather] = information;
         const timestamp = new Date();
         console.log('Setting TEMPSCAN state with external data');
+        // Bereinigung von TTS und Voice bevor zur TEMP SCAN Seite navigiert wird
+        TTS.stop().catch(error => console.log('TTS STOP FAILED', error));
+        Voice.destroy().catch(error => console.log('DESTROYING VOICE FAILED', error));
         setQStatus(q => ({
           ...q,
           externalData: {
@@ -525,26 +590,26 @@ const Questionnaire = () => {
             }}>
             Instructions
           </Text>
-          <Text style={{marginBottom: 5, fontSize: 16}}>
+          <Text style={{ marginBottom: 5, fontSize: 16 }}>
             The Questionnaire consists of multiple multi-choice questions.
           </Text>
-          <Text style={{marginBottom: 5, fontSize: 16}}>
-            If you are using an Android phone with the device's voice acess on please TURN VOICE ACCESS OFF
-            while completing the questionnaire. 
+          <Text style={{ marginBottom: 5, fontSize: 16 }}>
+            If you are using an Android phone with the device's voice access on please TURN VOICE ACCESS OFF
+            while completing the questionnaire.
           </Text>
-          <Text style={{marginBottom: 5, fontSize: 16}}>
+          <Text style={{ marginBottom: 5, fontSize: 16 }}>
             You can answer each question by speaking the answer in full or by saying "choice" and then the
             number associated with the answer. The questionnaire can also be
             completed by manually selecting the answers.
           </Text>
-          <Text style={{marginBottom: 5, fontSize: 16}}>
+          <Text style={{ marginBottom: 5, fontSize: 16 }}>
             After going though the questionnaire you can save your answers and
             view them in the history page or restart the questionnaire from the
-            beggining.
+            beginning.
           </Text>
-          
-          <Text style={{fontSize: 16}}>
-            Press the <Text style={{color: '#4388d6'}}>blue</Text> button below to
+
+          <Text style={{ fontSize: 16 }}>
+            Press the <Text style={{ color: '#4388d6' }}>blue</Text> button below to
             start the questionnaire
           </Text>
         </View>
@@ -580,7 +645,7 @@ const Questionnaire = () => {
             }}>
             Question {qStatus.questionIdx + 1}
           </Text>
-          <Text style={{fontSize: 20}}>
+          <Text style={{ fontSize: 20 }}>
             {questions[qStatus.questionIdx].question}
           </Text>
         </View>
@@ -602,31 +667,37 @@ const Questionnaire = () => {
                   marginBottom: 10,
                 }}
                 key={`${questions[qStatus.questionIdx].id}-${ans}`}
-                onPress={() => selectAnswer(ans)}
+                onPress={() => {
+                  stopRecording();
+                  selectAnswer(ans);
+                }}
               />
             );
           })}
         </View>
 
         {qStatus.questionIdx > 0 && (
-        <View style={{marginTop: 10}}>
-          <Button
-            title="Previous Question"
-            buttonStyle={{
-              borderWidth: 1,
-              borderColor: '#4388d6',
-              borderRadius: 10,
-              backgroundColor: '#ffffff',         
-            }}
-            titleStyle={{
-              color: '#4388d6',
-              fontSize: 20,
-            }}
-            onPress={goToPreviousQuestion}
-          />
-        </View>
-      )}
-        <View style={{marginTop: 20}}>
+          <View style={{ marginTop: 10 }}>
+            <Button
+              title="Previous Question"
+              buttonStyle={{
+                borderWidth: 1,
+                borderColor: '#4388d6',
+                borderRadius: 10,
+                backgroundColor: '#ffffff',
+              }}
+              titleStyle={{
+                color: '#4388d6',
+                fontSize: 20,
+              }}
+              onPress={() => {
+                stopRecording();
+                goToPreviousQuestion();
+              }}
+            />
+          </View>
+        )}
+        <View style={{ marginTop: 20 }}>
           <Button
             title="Cancel Questionnaire"
             buttonStyle={{
@@ -639,7 +710,10 @@ const Questionnaire = () => {
               color: '#ff0000',
               fontSize: 20,
             }}
-            onPress={cancelQuestionnaire}
+            onPress={() => {
+              stopRecording();
+              cancelQuestionnaire();
+            }}
           />
         </View>
       </View>
@@ -653,12 +727,12 @@ const Questionnaire = () => {
     ) {
       return (
         <View style={styles.containerResults}>
-          <Text h3 style={{color: '#4388d6', marginBottom: 12}}>
+          <Text h3 style={{ color: '#4388d6', marginBottom: 12 }}>
             Collecting Results...
           </Text>
           <LinearProgress
             color="primary"
-            animation={{duration: 700}}
+            animation={{ duration: 700 }}
             value={1}
           />
         </View>
@@ -669,10 +743,10 @@ const Questionnaire = () => {
   if (qStatus.state == QUESTIONNAIRE_STATES.SAVING) {
     return (
       <View style={styles.containerResults}>
-        <Text h3 style={{color: '#4388d6', marginBottom: 12}}>
+        <Text h3 style={{ color: '#4388d6', marginBottom: 12 }}>
           Saving...
         </Text>
-        <LinearProgress color="primary" animation={{duration: 700}} value={1} />
+        <LinearProgress color="primary" animation={{ duration: 700 }} value={1} />
       </View>
     );
   }
@@ -680,15 +754,14 @@ const Questionnaire = () => {
   if (qStatus.state == QUESTIONNAIRE_STATES.SAVED) {
     return (
       <View style={styles.containerSaved}>
-        <Text style={{color: '#4ec747', fontSize: 50}}>Saved</Text>
+        <Text style={{ color: '#4ec747', fontSize: 50 }}>Saved</Text>
       </View>
-
-      // <View></View>
     );
   }
 
   if (qStatus.state == QUESTIONNAIRE_STATES.TEMPSCAN) {
     return <Temperature onContinue={savedScans => {
+      stopRecording();
       setScans(savedScans);
       setQStatus(q => ({ ...q, state: QUESTIONNAIRE_STATES.FINISHED }));
     }} />;
@@ -699,39 +772,39 @@ const Questionnaire = () => {
       <ScrollView>
         <View style={styles.containerResults}>
           <View>
-            <View style={{marginBottom: 15}}>
-              <Text style={{fontSize: 20, color: '#4388d6'}}>
+            <View style={{ marginBottom: 15 }}>
+              <Text style={{ fontSize: 20, color: '#4388d6' }}>
                 {' '}
                 Timestamp:{' '}
-                <Text style={{fontSize: 15}}>
+                <Text style={{ fontSize: 15 }}>
                   {qStatus.externalData.timestampLocale}
                 </Text>
               </Text>
             </View>
-            <View style={{marginBottom: 15}}>
-              <Text style={{fontSize: 20, color: '#4388d6'}}>
+            <View style={{ marginBottom: 15 }}>
+              <Text style={{ fontSize: 20, color: '#4388d6' }}>
                 {' '}
                 Location:{' '}
-                <Text style={{fontSize: 15}}>
+                <Text style={{ fontSize: 15 }}>
                   {qStatus.externalData.weather.city},{' '}
                   {qStatus.externalData.weather.country}
                 </Text>
               </Text>
             </View>
-            <View style={{marginBottom: 15}}>
-              <Text style={{fontSize: 20, color: '#4388d6'}}>
+            <View style={{ marginBottom: 15 }}>
+              <Text style={{ fontSize: 20, color: '#4388d6' }}>
                 {' '}
                 Weather:{' '}
-                <Text style={{fontSize: 15, textTransform: 'capitalize'}}>
+                <Text style={{ fontSize: 15, textTransform: 'capitalize' }}>
                   {qStatus.externalData.weather.description}{' '}
                 </Text>
               </Text>
             </View>
-            <View style={{marginBottom: 15}}>
-              <Text style={{fontSize: 20, color: '#4388d6'}}>
+            <View style={{ marginBottom: 15 }}>
+              <Text style={{ fontSize: 20, color: '#4388d6' }}>
                 {' '}
                 Temperature:{' '}
-                <Text style={{fontSize: 15}}>
+                <Text style={{ fontSize: 15 }}>
                   {' '}
                   {qStatus.externalData.weather.temperature} °F{' '}
                 </Text>
@@ -742,41 +815,41 @@ const Questionnaire = () => {
           {qStatus.answeredQuestions.map((q, qIdx) => {
             return (
               <View key={`${q.questionObj.question}-${q.patientAnswer}`}>
-                <View style={{marginBottom: 15}}>
-                  <Text h3 style={{color: '#4388d6', marginBottom: 12}}>
+                <View style={{ marginBottom: 15 }}>
+                  <Text h3 style={{ color: '#4388d6', marginBottom: 12 }}>
                     Question {qIdx + 1}
                   </Text>
-                  <Text style={{fontSize: 20, marginBottom: 5}}>
+                  <Text style={{ fontSize: 20, marginBottom: 5 }}>
                     {q.questionObj.question}
                   </Text>
-                  <Text style={{fontSize: 25, color: '#4388d6'}}>
+                  <Text style={{ fontSize: 25, color: '#4388d6' }}>
                     Answer:{' '}
-                    <Text style={{fontSize: 20}}>{q.patientAnswer}</Text>
+                    <Text style={{ fontSize: 20 }}>{q.patientAnswer}</Text>
                   </Text>
                 </View>
                 <Divider
                   inset={true}
                   insetType="middle"
-                  style={{marginBottom: 15}}
+                  style={{ marginBottom: 15 }}
                 />
               </View>
             );
           })}
 
           {/* Display saved scans */}
-          <View style={{marginTop: 20}}>
-            <Text h3 style={{color: '#4388d6', marginBottom: 12}}>
+          <View style={{ marginTop: 20 }}>
+            <Text h3 style={{ color: '#4388d6', marginBottom: 12 }}>
               Saved Scans
             </Text>
             {scans.map(scan => (
-              <View key={scan.key} style={{marginBottom: 15}}>
-                <Text style={{fontSize: 20, color: '#4388d6'}}>
-                  Description: <Text style={{fontSize: 15}}>{scan.description}</Text>
+              <View key={scan.key} style={{ marginBottom: 15 }}>
+                <Text style={{ fontSize: 20, color: '#4388d6' }}>
+                  Description: <Text style={{ fontSize: 15 }}>{scan.description}</Text>
                 </Text>
-                <Text style={{fontSize: 20, color: '#4388d6'}}>
-                  Timestamp: <Text style={{fontSize: 15}}>{new Date(scan.timestamp).toLocaleString()}</Text>
+                <Text style={{ fontSize: 20, color: '#4388d6' }}>
+                  Timestamp: <Text style={{ fontSize: 15 }}>{new Date(scan.timestamp).toLocaleString()}</Text>
                 </Text>
-                <Divider inset={true} insetType="middle" style={{marginBottom: 15}} />
+                <Divider inset={true} insetType="middle" style={{ marginBottom: 15 }} />
               </View>
             ))}
           </View>

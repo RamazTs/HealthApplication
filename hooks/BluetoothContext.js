@@ -67,9 +67,9 @@ export const BluetoothProvider = ({ children }) => {
   };
 
   const handleUpdateValueForCharacteristic = (data) => {
-    console.log('handleUpdateValueForCharacteristic called');
+    // console.log('handleUpdateValueForCharacteristic called');
     const receivedData = Buffer.from(data.value).toString();
-    console.log('Received data: ', receivedData);
+    // console.log('Received data: ', receivedData);
     // Handle received data
   };
 
